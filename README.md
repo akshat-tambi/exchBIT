@@ -1,2 +1,0 @@
-# exchangeBIT
-Marketplace for BITians
