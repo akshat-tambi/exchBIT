@@ -27,6 +27,9 @@ const UserSchema=new mongoose.Schema({
        email:{
         type:String,
         required:[true,"email is required"],
+       },
+       refreshToken:{
+        type:String
        }
 },{timestamps:true});
 
@@ -36,9 +39,11 @@ UserSchema.pre("save",async function (next){
   this.password=await bcrypt.hash(this.password,10)
   next();
 })
+
 UserSchema.methods.isPasswordTrue=async function (password){
      return await bcrypt.compare(password,this.password);
 }
+
 UserSchema.methods.jwtAccessToken=function(){
     return jwt.sign({
         _id:this._id,
@@ -46,14 +51,14 @@ UserSchema.methods.jwtAccessToken=function(){
         email:this.email
     },process.env.ACCESS_TOKEN_SECRET,
    {
-      expiresIn:process.env.ACCESS_TOKEN_EXPIRE
+      expiresIn:process.env.ACCESS_TOKEN_EXPIRY
    })
 }
 UserSchema.methods.jwtRefreshToken=function(){
     return jwt.sign({
         _id:this._id
     },process.env.REFRESH_TOKEN_SECRET,{
-        expiresIn:process.env.REFRESH_TOKEN_EXPIRE
+        expiresIn:process.env.REFRESH_TOKEN_EXPIRY
     })
 }
 export const User=mongoose.model('User',UserSchema);
