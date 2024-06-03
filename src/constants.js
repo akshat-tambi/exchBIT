@@ -1,1 +1,1 @@
-export const DB_NAME="ExchangeBit"
+export const DB_NAME="exchBIT"
