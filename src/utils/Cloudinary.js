@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "cloudinary";
 import fs from "fs";
 
 cloudinary.config({
@@ -10,8 +10,8 @@ cloudinary.config({
 const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "raw",
+    const response = await cloudinary.v2.uploader.upload(localFilePath, {
+      resource_type: "auto",
     });
     console.log("File uploaded on Cloudinary");
     fs.unlinkSync(localFilePath);
@@ -22,14 +22,12 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-const deleteFromCloudinary = async (publicId) => {
+const deleteFromCloudinary = async (publicId,isRaw) => {
   try {
     if (!publicId) {
       throw new Error("Public ID is required");
     }
-
-    const deletionResponse = await cloudinary.uploader.destroy(publicId);
-
+    const deletionResponse=(isRaw)? await cloudinary.v2.uploader.destroy(publicId,{ resource_type:"raw"}):await cloudinary.v2.uploader.destroy(publicId);
     if (deletionResponse.result === "not found") {
       console.log(`File with public ID ${publicId} not found on Cloudinary`);
     } else if (deletionResponse.result !== "ok") {
@@ -42,6 +40,7 @@ const deleteFromCloudinary = async (publicId) => {
     throw error;
   }
 };
+
 
 
 export { uploadOnCloudinary, deleteFromCloudinary };
