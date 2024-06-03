@@ -1,11 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 const categorySchema = new Schema({
-    id: {
-        type: String,
-        required: true,
-        unique: true
-    },
     prodType: {
         type: String,
         required: true

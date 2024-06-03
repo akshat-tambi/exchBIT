@@ -5,79 +5,141 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/Cloudinary.js";
 
+
 export const createProduct = asyncHandler(async (req, res) => {
   const { pName, desc, price, cat } = req.body;
   const userId = req.user._id;
-  const files = req.files; 
+  const files = req.files;
 
-  const uploadedMedia = await Promise.all(files.map(file => uploadOnCloudinary(file.path)));
+  try {
+    // ensure cat -> array
+    const categories = Array.isArray(cat) ? cat : [cat];
 
-  const product = new Product({
-    pName,
-    desc,
-    price,
-    cat,
-    media: uploadedMedia,
-    ownedBy: userId,
-    status: true,
-  });
+    //to cloudinary
+    const uploadedMedia = await Promise.all(files.map(file => uploadOnCloudinary(file.path)));
+    const mediaUrls = uploadedMedia.map(file => file.secure_url);
 
-  await product.save();
+    // find or create categories and get their IDs
+    const categoryIds = await Promise.all(categories.map(async (categoryName) => {
+      let category = await Category.findOne({ prodType: categoryName });
+      if (!category) {
+        category = new Category({ prodType: categoryName });
+        await category.save();
+      }
+      return category._id;
+    }));
 
-  await User.findByIdAndUpdate(userId, {
-    $push: { productsOwned: product._id }
-  });
+    
+    const product = new Product({
+      pName,
+      desc,
+      price,
+      cat: categoryIds,
+      media: mediaUrls,
+      ownedBy: userId,
+      status: true,
+    });
 
-  await Category.findByIdAndUpdate(cat, {
-    $push: { prodList: product._id }
-  });
+    await product.save();
 
-  res.status(201).json({ success: true, product });
+    //update
+    await User.findByIdAndUpdate(userId, { $push: { productsOwned: product._id } });
+
+    // update the prodList array 
+    await Promise.all(categoryIds.map(async (categoryId) => {
+      await Category.findByIdAndUpdate(categoryId, { $addToSet: { prodList: product._id } });
+    }));
+
+    res.status(201).json({ success: true, product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "An error occurred while creating the product" });
+  }
 });
+
 
 export const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { pName, desc, price, cat, deleteMedia } = req.body;
   const userId = req.user._id;
-  const newFiles = req.files; 
+  const newFiles = req.files;
 
-  const product = await Product.findById(id);
-  if (!product) throw new ApiError(404, "Product not found");
+  try {
+    const product = await Product.findById(id);
+    if (!product) throw new ApiError(404, "Product not found");
 
+    // deleteMedia is always treated as an array
+    const mediaToDelete = Array.isArray(deleteMedia) ? deleteMedia : [deleteMedia];
 
-  await Promise.all(deleteMedia.map(file => deleteFromCloudinary(file)));
-  
+    // public IDs from deleteMedia URLs and delete files from Cloudinary
+    await Promise.all(mediaToDelete.map(async (url) => {
+      const publicId = extractPublicId(url);
+      const isRaw = !/\.\w+$/.test(url); // if the URL contains an extension (means not raw)
+      await deleteFromCloudinary(publicId, isRaw);
+      // remove from product's media array
+      product.media = product.media.filter(mediaUrl => mediaUrl !== url);
+    }));
 
-  const uploadedMedia = await Promise.all(newFiles.map(file => uploadOnCloudinary(file.path)));
-  product.media = product.media.filter(file => !deleteMedia.includes(file)).concat(uploadedMedia);
+    // cat is always sent as an array
+    const categories = Array.isArray(cat) ? cat : [cat];
 
-  const oldCat = product.cat;
-  product.pName = pName || product.pName;
-  product.desc = desc || product.desc;
-  product.price = price || product.price;
-  product.cat = cat || product.cat;
+    //  new media files to Cloudinary
+    const uploadedMedia = await Promise.all(newFiles.map(file => uploadOnCloudinary(file.path)));
+    const mediaUrls = uploadedMedia.map(file => file.secure_url);
 
-  await product.save();
+    // find or create categories and get their IDs
+    const categoryIds = await Promise.all(categories.map(async (categoryName) => {
+      let category = await Category.findOne({ prodType: categoryName });
+      if (!category) {
+        category = new Category({ prodType: categoryName });
+        await category.save();
+      }
+      return category._id;
+    }));
 
+    // update product media with the new files
+    product.media = [...product.media, ...mediaUrls];
 
-  if (!req.user.productsOwned.includes(product._id)) {
-    await User.findByIdAndUpdate(userId, {
-      $push: { productsOwned: product._id }
-    });
+    product.pName = pName || product.pName;
+    product.desc = desc || product.desc;
+    product.price = price || product.price;
+    product.cat = categoryIds;
+
+    await product.save();
+
+    // user's productsOwned 
+    if (!req.user.productsOwned.includes(product._id)) {
+      await User.findByIdAndUpdate(userId, { $push: { productsOwned: product._id } });
+    }
+
+    //prodList array 
+    await Promise.all(categoryIds.map(async (categoryId) => {
+      await Category.findByIdAndUpdate(categoryId, { $addToSet: { prodList: product._id } });
+    }));
+
+    // remove product ID from prodList 
+    const oldCategories = await Category.find({ _id: { $nin: categoryIds } });
+    await Promise.all(oldCategories.map(async (oldCategory) => {
+      await Category.findByIdAndUpdate(oldCategory._id, { $pull: { prodList: product._id } });
+    }));
+
+    res.status(200).json({ success: true, product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "An error occurred while updating the product" });
   }
-
-
-  if (cat !== oldCat) {
-    await Category.findByIdAndUpdate(oldCat, {
-      $pull: { prodList: product._id }
-    });
-    await Category.findByIdAndUpdate(cat, {
-      $push: { prodList: product._id }
-    });
-  }
-
-  res.status(200).json({ success: true, product });
 });
+
+// function to extract public ID from Cloudinary URL
+function extractPublicId(url) {
+  const parts = url.split('/');
+  const publicIdWithFormat = parts[parts.length - 1];
+  const publicIdParts = publicIdWithFormat.split('.');
+  return publicIdParts[0];
+}
+
+
+
 
 export const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -87,8 +149,12 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   if (!product) throw new ApiError(404, "Product not found");
 
 
-  await Promise.all(product.media.map(file => deleteFromCloudinary(file)));
-
+  await Promise.all(product.media.map(async (url) => {
+    const publicId = extractPublicId(url);
+    const isRaw = !/\.\w+$/.test(url); 
+    await deleteFromCloudinary(publicId, isRaw);
+    product.media = product.media.filter(mediaUrl => mediaUrl !== url);
+  }));
   await Product.findByIdAndDelete(id);
 
 
@@ -103,6 +169,8 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 
   res.status(200).json({ success: true, message: "Product deleted successfully" });
 });
+
+
 
 export const getUserProducts = asyncHandler(async (req, res) => {
   const userId = req.user._id;

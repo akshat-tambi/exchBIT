@@ -1,11 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 const productSchema = new Schema({
-    id: {
-        type: String,
-        required: true,
-        unique: true
-    },
     pName: {
         type: String,
         required: true
@@ -14,19 +9,19 @@ const productSchema = new Schema({
         type: String,
         required: true
     },
-    media: {
-        type: [String], // URLs
+    media: [{
+        type: String, // URLs
         required: true
-    },
+    }],
     price: {
         type: Number,
         required: true
     },
-    cat: {
-        type: [Schema.Types.ObjectId],
+    cat: [{
+        type: Schema.Types.ObjectId,
         ref: 'Category',
         required: true
-    },
+    }],
     status: {
         type: Boolean,
         required: true
