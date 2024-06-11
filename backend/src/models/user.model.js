@@ -39,6 +39,10 @@ const UserSchema = new mongoose.Schema({
     notif: [{
         type: Schema.Types.ObjectId,
         ref: 'Notification'
+    }],
+    chats: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Chat'
     }]
 }, { timestamps: true });
 
