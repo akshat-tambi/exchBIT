@@ -26,14 +26,12 @@ const productSchema = new Schema({
         type: Boolean,
         required: true
     },
-    ownedBy: {
+    user: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
     }
 }, {
     timestamps: true
 });
-
 
 export const Product = mongoose.model('Product', productSchema);

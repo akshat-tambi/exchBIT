@@ -29,7 +29,7 @@ const deleteFromCloudinary = async (publicId,isRaw) => {
     }
     const deletionResponse=(isRaw)? await cloudinary.v2.uploader.destroy(publicId,{ resource_type:"raw"}):await cloudinary.v2.uploader.destroy(publicId);
     if (deletionResponse.result === "not found") {
-      console.log(`File with public ID ${publicId} not found on Cloudinary`);
+      throw new Error(`File with public ID ${publicId} not found on Cloudinary`);
     } else if (deletionResponse.result !== "ok") {
       throw new Error(`Failed to delete file from Cloudinary: ${deletionResponse.result}`);
     } else {

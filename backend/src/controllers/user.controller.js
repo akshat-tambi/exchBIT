@@ -12,8 +12,6 @@ const generateAccessAndRefreshTokens= async(userid)=>{
        const accessToken=user.jwtAccessToken();
        const refreshToken= user.jwtRefreshToken();
 
-
-
       console.log("access ",accessToken);
       console.log("refresh ",refreshToken);
 
