@@ -74,6 +74,11 @@ web_modules/
 .env.test
 .env.production
 
+
+#redis dump
+dump.rdb
+uploads
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
