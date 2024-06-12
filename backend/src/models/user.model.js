@@ -43,6 +43,14 @@ const UserSchema = new mongoose.Schema({
     chats: [{
         type: Schema.Types.ObjectId,
         ref: 'Chat'
+    }],
+    outgoingRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Request'
+    }],
+    incomingRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Request'
     }]
 }, { timestamps: true });
 

@@ -13,7 +13,7 @@ export const getChatHistory = async (req, res) => {
         }
 
         // chat IDs from the user's chat array
-        const chatIds = currentUser.chat;
+        const chatIds = currentUser.chats;
 
         // chat history using the chat IDs
         const chatHistory = await Chat.find({

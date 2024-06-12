@@ -29,7 +29,11 @@ const productSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    requests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Request'
+      }],
 }, {
     timestamps: true
 });
