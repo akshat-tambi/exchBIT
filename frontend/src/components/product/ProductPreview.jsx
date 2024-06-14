@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { PropTypes } from "prop-types";
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { breakpoints, defaultTheme } from "../../styles/themes/default";
 
@@ -81,8 +81,9 @@ const ProductPreviewWrapper = styled.div`
 `;
 
 const ProductPreview = ({ previewImages }) => {
+  
   const [activePreviewImage, setActivePreviewImage] = useState(
-    previewImages[0].imgSource
+    previewImages.length > 0 ? previewImages[0] : ""
   );
 
   const handlePreviewImageChange = (previewImage) => {
@@ -92,26 +93,28 @@ const ProductPreview = ({ previewImages }) => {
   return (
     <ProductPreviewWrapper className="grid items-center">
       <div className="preview-items w-full">
-        {previewImages.map((previewImage) => {
-          return (
-            <div
-              className="preview-item-wrapper"
-              key={previewImage.id}
-              onClick={() => handlePreviewImageChange(previewImage.imgSource)}
-            >
-              <div className="preview-item">
-                <img
-                  src={previewImage.imgSource}
-                  alt=""
-                  className="object-fit-cover"
-                />
-              </div>
+        {previewImages.map((previewImage, index) => (
+          <div
+            className="preview-item-wrapper"
+            key={index}
+            onClick={() => handlePreviewImageChange(previewImage)}
+          >
+            <div className="preview-item">
+              <img
+                src={previewImage}
+                alt={`Preview ${index}`}
+                className="object-fit-cover"
+              />
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
       <div className="preview-display">
-        <img src={activePreviewImage} className="object-fit-cover" alt="" />
+        <img
+          src={activePreviewImage}
+          alt="Active Preview"
+          className="object-fit-cover"
+        />
       </div>
     </ProductPreviewWrapper>
   );
@@ -120,5 +123,5 @@ const ProductPreview = ({ previewImages }) => {
 export default ProductPreview;
 
 ProductPreview.propTypes = {
-  previewImages: PropTypes.array,
+  previewImages: PropTypes.arrayOf(PropTypes.string.isRequired),
 };

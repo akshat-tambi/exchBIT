@@ -1,75 +1,60 @@
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Container } from "../../styles/styles";
 import Breadcrumb from "../../components/common/Breadcrumb";
-import { product_one } from "../../data/data";
 import ProductPreview from "../../components/product/ProductPreview";
-import { Link } from "react-router-dom";
-import { BaseLinkGreen } from "../../styles/button";
-import { currencyFormat } from "../../utils/helper";
-import { breakpoints, defaultTheme } from "../../styles/themes/default";
 import ProductDescriptionTab from "../../components/product/ProductDescriptionTab";
+import ProductDescriptionMedia from "../../components/product/ProductDescriptionMedia";
+import Title from "../../components/common/Title";
 import ProductSimilar from "../../components/product/ProductSimilar";
-import ProductServices from "../../components/product/ProductServices";
+import { getProductById } from "../../services/productService";
+import { breakpoints, defaultTheme } from "../../styles/themes/default";
+import { useParams } from "react-router-dom";
+import { currencyFormat } from "../../utils/helper";
 
 const DetailsScreenWrapper = styled.main`
-  margin: 40px 0;
+  margin: 40px 20px; /* Adjusted margin */
 `;
 
 const DetailsContent = styled.div`
-  grid-template-columns: repeat(2, 1fr);
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
   gap: 40px;
 
   @media (max-width: ${breakpoints.xl}) {
     gap: 24px;
-    grid-template-columns: 3fr 2fr;
+    grid-template-columns: 3fr 1px 2fr;
   }
 
   @media (max-width: ${breakpoints.lg}) {
-    grid-template-columns: 100%;
+    grid-template-columns: 1fr;
   }
+`;
+
+const VerticalDivider = styled.div`
+  width: 1px;
+  height: 100%;
+  background-color: ${defaultTheme.color_silver};
 `;
 
 const ProductDetailsWrapper = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 24px;
 
-  @media (max-width: ${breakpoints.sm}) {
-    padding: 16px;
-  }
-
-  @media (max-width: ${breakpoints.xs}) {
-    padding: 12px;
-  }
-
   .prod-title {
-    margin-bottom: 10px;
+    margin-bottom: 20px; /* Increased margin */
   }
+
   .rating-and-comments {
     column-gap: 16px;
     margin-bottom: 20px;
   }
+
   .prod-rating {
     column-gap: 10px;
   }
+
   .prod-comments {
     column-gap: 10px;
-  }
-  .prod-add-btn {
-    min-width: 160px;
-    column-gap: 8px;
-    &-text {
-      margin-top: 2px;
-    }
-  }
-
-  .btn-and-price {
-    margin-top: 36px;
-    column-gap: 16px;
-    row-gap: 10px;
-
-    @media (max-width: ${breakpoints.sm}) {
-      margin-top: 24px;
-    }
   }
 `;
 
@@ -77,12 +62,10 @@ const ProductSizeWrapper = styled.div`
   .prod-size-top {
     gap: 20px;
   }
+
   .prod-size-list {
     gap: 12px;
     margin-top: 16px;
-    @media (max-width: ${breakpoints.sm}) {
-      gap: 8px;
-    }
   }
 
   .prod-size-item {
@@ -90,11 +73,6 @@ const ProductSizeWrapper = styled.div`
     height: 38px;
     width: 38px;
     cursor: pointer;
-
-    @media (max-width: ${breakpoints.sm}) {
-      width: 32px;
-      height: 32px;
-    }
 
     input {
       position: absolute;
@@ -104,11 +82,6 @@ const ProductSizeWrapper = styled.div`
       height: 38px;
       opacity: 0;
       cursor: pointer;
-
-      @media (max-width: ${breakpoints.sm}) {
-        width: 32px;
-        height: 32px;
-      }
 
       &:checked + span {
         color: ${defaultTheme.color_white};
@@ -123,21 +96,15 @@ const ProductSizeWrapper = styled.div`
       border-radius: 8px;
       border: 1.5px solid ${defaultTheme.color_silver};
       text-transform: uppercase;
-
-      @media (max-width: ${breakpoints.sm}) {
-        width: 32px;
-        height: 32px;
-      }
     }
   }
 `;
 
+
+
+
 const ProductColorWrapper = styled.div`
   margin-top: 32px;
-
-  @media (max-width: ${breakpoints.sm}) {
-    margin-top: 24px;
-  }
 
   .prod-colors-top {
     margin-bottom: 16px;
@@ -182,109 +149,57 @@ const ProductColorWrapper = styled.div`
 `;
 
 const ProductDetailsScreen = () => {
-  const stars = Array.from({ length: 5 }, (_, index) => (
-    <span
-      key={index}
-      className={`text-yellow ${
-        index < Math.floor(product_one.rating)
-          ? "bi bi-star-fill"
-          : index + 0.5 === product_one.rating
-          ? "bi bi-star-half"
-          : "bi bi-star"
-      }`}
-    ></span>
-  ));
+  const { productId } = useParams();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const breadcrumbItems = [
-    { label: "Shop", link: "" },
-    { label: "Women", link: "" },
-    { label: "Top", link: "" },
-  ];
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        setLoading(true);
+        const fetchedProduct = await getProductById(productId);
+        setProduct(fetchedProduct);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+    if (productId) {
+      fetchProductDetails();
+    }
+  }, [productId]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error</p>;
 
   return (
     <DetailsScreenWrapper>
-      <Container>
-        <Breadcrumb items={breadcrumbItems} />
-        <DetailsContent className="grid">
-          <ProductPreview previewImages={product_one.previewImages} />
-          <ProductDetailsWrapper>
-            <h2 className="prod-title">{product_one.title}</h2>
-            <div className="flex items-center rating-and-comments flex-wrap">
-              <div className="prod-rating flex items-center">
-                {stars}
-                <span className="text-gray text-xs">{product_one.rating}</span>
-              </div>
-              <div className="prod-comments flex items-start">
-                <span className="prod-comment-icon text-gray">
-                  <i className="bi bi-chat-left-text"></i>
-                </span>
-                <span className="prod-comment-text text-sm text-gray">
-                  {product_one.comments_count} comment(s)
-                </span>
-              </div>
-            </div>
-
-            <ProductSizeWrapper>
-              <div className="prod-size-top flex items-center flex-wrap">
-                <p className="text-lg font-semibold text-outerspace">
-                  Select size
-                </p>
-                <Link to="/" className="text-lg text-gray font-medium">
-                  Size Guide &nbsp; <i className="bi bi-arrow-right"></i>
-                </Link>
-              </div>
-              <div className="prod-size-list flex items-center">
-                {product_one.sizes.map((size, index) => (
-                  <div className="prod-size-item" key={index}>
-                    <input type="radio" name="size" />
-                    <span className="flex items-center justify-center font-medium text-outerspace text-sm">
-                      {size}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </ProductSizeWrapper>
-            <ProductColorWrapper>
-              <div className="prod-colors-top flex items-center flex-wrap">
-                <p className="text-lg font-semibold text-outerspace">
-                  Colours Available
-                </p>
-              </div>
-              <div className="prod-colors-list flex items-center">
-                {product_one?.colors?.map((color, index) => (
-                  <div className="prod-colors-item" key={index}>
-                    <input type="radio" name="colors" />
-                    <span
-                      className="prod-colorbox"
-                      style={{ background: `${color}` }}
-                    ></span>
-                  </div>
-                ))}
-              </div>
-            </ProductColorWrapper>
-            <div className="btn-and-price flex items-center flex-wrap">
-              <BaseLinkGreen
-                to="/cart"
-                as={BaseLinkGreen}
-                className="prod-add-btn"
-              >
-                <span className="prod-add-btn-icon">
-                  <i className="bi bi-cart2"></i>
-                </span>
-                <span className="prod-add-btn-text">Add to cart</span>
-              </BaseLinkGreen>
-              <span className="prod-price text-xl font-bold text-outerspace">
-                {currencyFormat(product_one.price)}
-              </span>
-            </div>
-            <ProductServices />
-          </ProductDetailsWrapper>
-        </DetailsContent>
-        <ProductDescriptionTab />
-        <ProductSimilar />
-      </Container>
+      <Title className="prod-title" titleText={product.pName}></Title>
+      <Breadcrumb items={product.breadcrumbItems} />
+      <DetailsContent>
+        <ProductPreview previewImages={product.media} />
+        <VerticalDivider />
+        <div>
+        <ProductDescriptionTab description={product.desc} />
+        <div>
+          <button className="prod-add-btn">
+            <span className="bi bi-cart2" />
+            <span className="prod-add-btn-text">Add to cart</span>
+          </button>
+          <span className="text-xl text-outerspace font-bold">
+            {currencyFormat(product.price)}
+          </span>
+        </div>
+        </div>
+      </DetailsContent>
+      <ProductSimilar>
+        <ProductSimilar products={product.similarProducts} />
+      </ProductSimilar>
     </DetailsScreenWrapper>
   );
+  
 };
 
 export default ProductDetailsScreen;

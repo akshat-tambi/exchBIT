@@ -38,7 +38,7 @@ function App() {
           <Route path="/" element={<BaseLayout />}>
             <Route index element={<Home />} />
             <Route path="/product" element={<ProductList />} />
-            <Route path="/product/details" element={<ProductDetails />} />
+            {/* <Route path="/product/details" element={<ProductDetails />} /> */}
             <Route path="/cart" element={<Cart />} />
             <Route path="/empty_cart" element={<CartEmpty />} />
             <Route path="/checkout" element={<Checkout />} />
@@ -50,7 +50,7 @@ function App() {
             <Route path="/account" element={<Account />} />
             <Route path="/account/add" element={<Address />} />
             <Route path="/byCategory/:categoryName" element={<FilterPage />} /> 
-            {/* <Route path="/product/details/:productId" element={<ProductDetails/>} /> */}
+            <Route path="/product/details/:productId" element={<ProductDetails/>} />
           </Route>
 
           {/* auth screens */}
