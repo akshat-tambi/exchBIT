@@ -159,11 +159,11 @@ const newArrivalData = [
   },
 ];
 
-const savingZoneData = [
+const CategoriesData = [
   {
     id: "saving-z-1",
     imgSource: staticImages.bigzone1,
-    title: "Hawaiian Shirts",
+    title: "Electronics",
     description: "Dress up in summer vibe",
     discount: 50,
     isLimited: false,
@@ -171,7 +171,7 @@ const savingZoneData = [
   {
     id: "saving-z-2",
     imgSource: staticImages.bigzone2,
-    title: "Printed T-Shirt",
+    title: "Fashion",
     description: "New Designs Every Week",
     discount: 40,
     isLimited: true,
@@ -179,7 +179,7 @@ const savingZoneData = [
   {
     id: "saving-z-3",
     imgSource: staticImages.bigzone3,
-    title: "Cargo Joggers",
+    title: "Scholastic Gear",
     description: "Move with style & comfort",
     discount: 50,
     isLimited: false,
@@ -187,7 +187,7 @@ const savingZoneData = [
   {
     id: "saving-z-4",
     imgSource: staticImages.bigzone4,
-    title: "Urban Shirts",
+    title: "Lab Apparel",
     description: "Live In Confort",
     discount: 20,
     isLimited: false,
@@ -195,7 +195,7 @@ const savingZoneData = [
   {
     id: "saving-z-5",
     imgSource: staticImages.bigzone5,
-    title: "Oversized T-Shirts",
+    title: "General Essentials",
     description: "Street Style Icon",
     discount: 60,
     isLimited: false,
@@ -833,7 +833,7 @@ export {
   navMenuData,
   bannerData,
   featuredData,
-  savingZoneData,
+  CategoriesData,
   mensCatalog,
   womensCatalog,
   limelightCatalog,

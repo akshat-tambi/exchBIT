@@ -10,6 +10,7 @@ import {
   getUserCartProducts,
   getUserWishlistProducts,
   getProductById,
+  getProductByCategory
 } from "../controllers/products.controller.js";
 
 const router = express.Router();
@@ -23,5 +24,6 @@ router.get("/", getAllProducts);//
 router.get("/cart", verifyJWT, getUserCartProducts);//
 router.get("/wishlist", verifyJWT, getUserWishlistProducts);//
 router.get("/:id", getProductById);//
+router.get('/category/:categoryName', getProductByCategory); // Route for getting products by category
 
 export default router;

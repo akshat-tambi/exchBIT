@@ -1,65 +1,78 @@
-import { PropTypes } from "prop-types";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import { commonCardStyles } from "../../styles/card";
-import { breakpoints, defaultTheme } from "../../styles/themes/default";
+// src/components/product/ProductItem.js
+
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { commonCardStyles } from '../../styles/card';
+import { breakpoints, defaultTheme } from '../../styles/themes/default';
 
 const ProductCardWrapper = styled(Link)`
   ${commonCardStyles}
-  @media(max-width: ${breakpoints.sm}) {
-    padding-left: 0;
-    padding-right: 0;
-  }
+  position: relative; // Ensure the wrapper is relative for absolute positioning of children
+  // Add box-shadow for card effect
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 
-  .product-img {
-    height: 393px;
-    position: relative;
-
-    @media (max-width: ${breakpoints.sm}) {
-      height: 320px;
-    }
-  }
-
-  .product-wishlist-icon {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 32px;
-    height: 32px;
-    border-radius: 100%;
-
-    &:hover {
-      background-color: ${defaultTheme.color_yellow};
-      color: ${defaultTheme.color_white};
-    }
+  &:hover {
+    transform: translateY(-5px); // Example of hover effect
   }
 `;
 
+const ProductImage = styled.img`
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+`;
+
+const WishlistButton = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: ${defaultTheme.color_white};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Add shadow for button
+
+  &:hover {
+    background-color: ${defaultTheme.color_yellow};
+    color: ${defaultTheme.color_white};
+  }
+`;
+
+const ProductInfo = styled.div`
+  padding: 12px;
+`;
+
 const ProductItem = ({ product }) => {
+  const firstMedia = product.media.length > 0 ? product.media[0] : '';
+
   return (
-    <ProductCardWrapper key={product.id} to="/product/details">
-      <div className="product-img">
-        <img className="object-fit-cover" src={product.imgSource} />
-        <button
-          type="button"
-          className="product-wishlist-icon flex items-center justify-center bg-white"
-        >
-          <i className="bi bi-heart"></i>
-        </button>
-      </div>
-      <div className="product-info">
-        <p className="font-bold">{product.title}</p>
+    <ProductCardWrapper to={`/product/details/${product._id}`}>
+      <ProductImage src={firstMedia} alt={product.pName} />
+      <WishlistButton type="button">
+        <i className="bi bi-heart"></i>
+      </WishlistButton>
+      <ProductInfo>
+        <p className="font-bold">{product.pName}</p>
         <div className="flex items-center justify-between text-sm font-medium">
-          <span className="text-gray">{product.brand}</span>
+          <span className="text-gray">
+            {product.cat.map((cat) => cat.categoryName).join(', ')}
+          </span>
           <span className="text-outerspace font-bold">${product.price}</span>
         </div>
-      </div>
+      </ProductInfo>
     </ProductCardWrapper>
   );
 };
 
-export default ProductItem;
-
 ProductItem.propTypes = {
-  product: PropTypes.object,
+  product: PropTypes.object.isRequired,
 };
+
+export default ProductItem;

@@ -24,6 +24,9 @@ import WishListEmpty from "./screens/user/WishListEmptyScreen";
 import Confirm from "./screens/user/ConfirmScreen";
 import Account from "./screens/user/AccountScreen";
 import Address from "./screens/user/AddressScreen";
+import FilterPage from "./components/product/ProductFilter";
+// import ProductDetails from './components/product/ProductDetails';
+
 
 function App() {
   return (
@@ -46,6 +49,8 @@ function App() {
             <Route path="/confirm" element={<Confirm />} />
             <Route path="/account" element={<Account />} />
             <Route path="/account/add" element={<Address />} />
+            <Route path="/byCategory/:categoryName" element={<FilterPage />} /> 
+            {/* <Route path="/product/details/:productId" element={<ProductDetails/>} /> */}
           </Route>
 
           {/* auth screens */}

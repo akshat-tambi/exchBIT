@@ -1,3 +1,4 @@
+import React from "react";
 import styled from "styled-components";
 import { Container, ContentStylings, Section } from "../../styles/styles";
 import Breadcrumb from "../../components/common/Breadcrumb";
@@ -9,6 +10,7 @@ import { breakpoints, defaultTheme } from "../../styles/themes/default";
 import ProductFilter from "../../components/product/ProductFilter";
 
 const ProductsContent = styled.div`
+  display: grid;
   grid-template-columns: 320px auto;
   margin: 20px 0;
 
@@ -38,9 +40,11 @@ const ProductsContentRight = styled.div`
 
   .products-right-top {
     margin-bottom: 40px;
+
     @media (max-width: ${breakpoints.lg}) {
       margin-bottom: 24px;
     }
+
     @media (max-width: ${breakpoints.sm}) {
       flex-direction: column;
       row-gap: 16px;
@@ -68,18 +72,16 @@ const ProductsContentRight = styled.div`
   }
 
   .product-card-list {
-    grid-template-columns: repeat(auto-fill, repeat(290px, auto));
-  }
-
-  .product-card {
-    padding-left: 0;
-    padding-right: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 20px;
   }
 `;
 
 const DescriptionContent = styled.div`
   .content-stylings {
     margin-left: 32px;
+
     @media (max-width: ${breakpoints.sm}) {
       margin-left: 0;
     }
@@ -91,6 +93,7 @@ const ProductListScreen = () => {
     { label: "Home", link: "/" },
     { label: "Products", link: "" },
   ];
+
   return (
     <main className="page-py-spacing">
       <Container>
@@ -101,7 +104,7 @@ const ProductListScreen = () => {
           </ProductsContentLeft>
           <ProductsContentRight>
             <div className="products-right-top flex items-center justify-between">
-              <h4 className="text-xxl">Women&apos;s Clothing</h4>
+              <h4 className="text-xxl">Women's Clothing</h4>
               <ul className="products-right-nav flex items-center justify-end flex-wrap">
                 <li>
                   <Link to="/" className="active text-lg font-semibold">

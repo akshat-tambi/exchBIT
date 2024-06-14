@@ -261,3 +261,21 @@ export const getProductById = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, message: "An error occurred while fetching the product" });
   }
 });
+
+export const getProductByCategory = asyncHandler(async (req, res) => {
+  const { categoryName } = req.params;
+
+  try {
+    // Find category by prodType
+    const category = await Category.findOne({ prodType: categoryName }).populate('prodList');
+    if (!category) throw new ApiError(404, "Category not found");
+
+    // Extract products from category
+    const products = category.prodList;
+
+    res.status(200).json({ success: true, products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "An error occurred while fetching products by category" });
+  }
+});

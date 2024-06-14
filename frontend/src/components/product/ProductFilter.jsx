@@ -1,353 +1,166 @@
-import { useState } from "react";
-import {
-  ColorsFilter,
-  FilterTitle,
-  FilterWrap,
-  PriceFilter,
-  ProductCategoryFilter,
-  SizesFilter,
-  StyleFilter,
-} from "../../styles/filter";
-import { ProductFilterList, StyleFilterList } from "../../data/data";
-import { staticImages } from "../../utils/images";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { Container, Section } from '../../styles/styles';
+import Title from '../common/Title';
+import ProductItem from './ProductItem'; // Assuming you have a ProductItem component
+import { getProductsByCategory } from '../../services/productService'; // Updated with getProductByCategory
+import { useParams } from 'react-router-dom'; // Import useParams hook
+import { breakpoints } from '../../styles/themes/default';
+import Slider from 'rc-slider'; // Import Slider component from rc-slider library
+import 'rc-slider/assets/index.css'; // Import default styles for rc-slider
 
-const ProductFilter = () => {
-  const [isProductFilterOpen, setProductFilterOpen] = useState(true);
-  const [isPriceFilterOpen, setPriceFilterOpen] = useState(true);
-  const [isColorFilterOpen, setColorFilterOpen] = useState(true);
-  const [isSizeFilterOpen, setSizeFilterOpen] = useState(true);
-  const [isStyleFilterOpen, setStyleFilterOpen] = useState(true);
+const FilterPageWrapper = styled.div`
+  display: flex;
+  padding: 40px 0;
+`;
 
-  const toggleFilter = (filter) => {
-    switch (filter) {
-      case "product":
-        setProductFilterOpen(!isProductFilterOpen);
-        break;
-      case "price":
-        setPriceFilterOpen(!isPriceFilterOpen);
-        break;
-      case "color":
-        setColorFilterOpen(!isColorFilterOpen);
-        break;
-      case "size":
-        setSizeFilterOpen(!isSizeFilterOpen);
-        break;
-      case "style":
-        setStyleFilterOpen(!isStyleFilterOpen);
-        break;
-      default:
-        break;
+const FilterForm = styled.form`
+  flex: 0 0 calc(25% - 20px);
+  padding-right: 20px;
+
+  @media (max-width: ${breakpoints.sm}) {
+    flex: 0 0 100%;
+    padding-right: 0;
+    margin-bottom: 20px;
+  }
+`;
+
+const FilterInput = styled.input`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: calc(100% - 22px);
+  font-size: 16px;
+  margin-bottom: 10px;
+`;
+
+const FilterButton = styled.button`
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const ProductList = styled.div`
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding-left: 20px;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Divider = styled.div`
+  width: 1px;
+  background-color: #ccc;
+  margin: 0 20px;
+`;
+
+const FilterPage = () => {
+  const { categoryName } = useParams(); // Retrieve categoryName from URL params
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filters, setFilters] = useState({ productName: '', minPrice: '0', maxPrice: '50000' });
+
+  useEffect(() => {
+    fetchProductsByCategory();
+  }, [categoryName]); // Fetch products when categoryName changes
+
+  const fetchProductsByCategory = async () => {
+    try {
+      const response = await getProductsByCategory(categoryName);
+      if (response.success) {
+        setProducts(response.products);
+        setFilteredProducts(response.products); // Initialize filteredProducts with all products
+      } else {
+        console.error('Failed to fetch products by category:', response.message);
+      }
+    } catch (error) {
+      console.error('Error fetching products by category:', error);
     }
   };
 
-  const rangeMin = 100;
-  const [minRange, setMinRange] = useState(300);
-  const [maxRange, setMaxRange] = useState(700);
-
-  const handleInputChange = (e) => {
-    const inputName = e.target.name;
-    const inputValue = parseInt(e.target.value);
-
-    if (inputName === "min") {
-      setMinRange(inputValue);
-      if (maxRange - inputValue < rangeMin) {
-        setMaxRange(inputValue + rangeMin);
-      }
-    } else if (inputName === "max") {
-      setMaxRange(inputValue);
-      if (inputValue - minRange < rangeMin) {
-        setMinRange(inputValue - rangeMin);
-      }
-    }
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [name]: value
+    }));
   };
 
-  const calculateRangePosition = (value, max) => {
-    return (value / max) * 100 + "%";
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    // Apply filters
+    let filtered = products.filter(product => {
+      // Filter by product name
+      if (filters.productName && !product.pName.toLowerCase().includes(filters.productName.toLowerCase())) {
+        return false;
+      }
+      // Filter by price range
+      if (filters.minPrice && parseFloat(product.price) < parseFloat(filters.minPrice)) {
+        return false;
+      }
+      if (filters.maxPrice && parseFloat(product.price) > parseFloat(filters.maxPrice)) {
+        return false;
+      }
+      return true;
+    });
+
+    setFilteredProducts(filtered);
   };
 
   return (
-    <>
-      <ProductCategoryFilter>
-        <FilterTitle
-          className="filter-title flex items-center justify-between"
-          onClick={() => toggleFilter("product")}
-        >
-          <p className="filter-title-text text-gray text-base font-semibold text-lg">
-            Filter
-          </p>
-          <span
-            className={`text-gray text-xxl filter-title-icon ${
-              !isProductFilterOpen ? "rotate" : ""
-            }`}
-          >
-            <i className="bi bi-filter"></i>
-          </span>
-        </FilterTitle>
-        <FilterWrap className={`${!isProductFilterOpen ? "hide" : "show"}`}>
-          {ProductFilterList?.map((productFilter) => {
-            return (
-              <div className="product-filter-item" key={productFilter.id}>
-                <button
-                  type="button"
-                  className="filter-item-head w-full flex items-center justify-between"
-                >
-                  <span className="filter-head-title text-base text-gray font-semibold">
-                    {productFilter.title}
-                  </span>
-                  <span className="filter-head-icon text-gray">
-                    <i className="bi bi-chevron-right"></i>
-                  </span>
-                </button>
-              </div>
-            );
-          })}
-        </FilterWrap>
-      </ProductCategoryFilter>
-
-      <PriceFilter>
-        <FilterTitle
-          className="filter-title flex items-center justify-between"
-          onClick={() => toggleFilter("price")}
-        >
-          <p className="filter-title-text text-gray text-base font-semibold text-lg">
-            Price
-          </p>
-          <span
-            className={`text-gray text-xl filter-title-icon ${
-              !isPriceFilterOpen ? "rotate" : ""
-            }`}
-          >
-            <i className="bi bi-chevron-up"></i>
-          </span>
-        </FilterTitle>
-        <FilterWrap
-          className={`range filter-wrap ${
-            !isPriceFilterOpen ? "hide" : "show"
-          }`}
-        >
-          <div className="range-slider">
-            <span
-              className="range-selected h-full bg-sea-green"
-              style={{
-                left: calculateRangePosition(minRange, 1000),
-                right: calculateRangePosition(1000 - maxRange, 1000),
-              }}
-            ></span>
-          </div>
-          <div className="range-input">
-            <input
-              type="range"
-              className="min w-full"
-              min="0"
-              max="1000"
-              value={minRange}
-              step="10"
-              name="min"
-              onChange={handleInputChange}
+    <Section>
+      <Container>
+        <Title titleText={categoryName.toUpperCase()} /> 
+        <FilterPageWrapper>
+          <FilterForm onSubmit={handleFormSubmit}>
+            <FilterInput
+              type="text"
+              name="productName"
+              placeholder="Search by product name"
+              value={filters.productName}
+              onChange={handleFilterChange}
             />
-            <input
-              type="range"
-              className="min w-full"
-              min="0"
-              max="1000"
-              value={maxRange}
-              step="10"
-              name="max"
-              onChange={handleInputChange}
+            <Slider
+              min={0}
+              max={50000}
+              step={10}
+              defaultValue={[0, 50000]}
+              onChange={([minPrice, maxPrice]) => setFilters({ ...filters, minPrice, maxPrice })}
+              range
             />
-          </div>
-          <div className="range-price w-full flex items-center">
-            <input
-              type="number"
-              className="text-center"
-              name="min"
-              value={minRange}
-              onChange={handleInputChange}
-            />
-            <input
-              type="number"
-              className="text-center"
-              name="max"
-              value={maxRange}
-              onChange={handleInputChange}
-            />
-          </div>
-        </FilterWrap>
-      </PriceFilter>
-
-      <ColorsFilter>
-        <FilterTitle
-          className="flex items-center justify-between"
-          onClick={() => toggleFilter("color")}
-        >
-          <p className="filter-title-text text-gray text-base font-semibold text-lg">
-            Colors
-          </p>
-          <span
-            className={`text-gray text-xl filter-title-icon ${
-              !isColorFilterOpen ? "rotate" : ""
-            }`}
-          >
-            <i className="bi bi-chevron-up"></i>
-          </span>
-        </FilterTitle>
-        <FilterWrap className={`${!isColorFilterOpen ? "hide" : "show"}`}>
-          <div className="colors-list grid">
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color1} alt="" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginTop: '10px' }}>
+              <span>${filters.minPrice}</span>
+              <span>${filters.maxPrice}</span>
             </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color2} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color3} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color4} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color5} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color6} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color7} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color8} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color9} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color10} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color11} alt="" />
-            </div>
-            <div className="colors-item text-center flex flex-col justify-center items-center">
-              <input type="checkbox" />
-              <img src={staticImages.color12} alt="" />
-            </div>
-          </div>
-        </FilterWrap>
-      </ColorsFilter>
-      <SizesFilter>
-        <FilterTitle
-          className="flex items-center justify-between"
-          onClick={() => toggleFilter("size")}
-        >
-          <p className="filter-title-text text-gray text-base font-semibold text-lg">
-            Size
-          </p>
-          <span
-            className={`text-gray text-xl filter-title-icon ${
-              !isSizeFilterOpen ? "rotate" : ""
-            }`}
-          >
-            <i className="bi bi-chevron-up"></i>
-          </span>
-        </FilterTitle>
-        <FilterWrap className={`${!isSizeFilterOpen ? "hide" : "show"}`}>
-          <div className="sizes-list grid text-center justify-center">
-            <div className="sizes-item text-sm font-semibold text-outerspace w-full">
-              <input type="checkbox" />
-              <span className="flex items-center justify-center uppercase">
-                xxs
-              </span>
-            </div>
-            <div className="sizes-item text-sm font-semibold text-outerspace w-full">
-              <input type="checkbox" />
-              <span className="flex items-center justify-center uppercase">
-                xs
-              </span>
-            </div>
-            <div className="sizes-item text-sm font-semibold text-outerspace w-full">
-              <input type="checkbox" />
-              <span className="flex items-center justify-center uppercase">
-                s
-              </span>
-            </div>
-            <div className="sizes-item text-sm font-semibold text-outerspace w-full">
-              <input type="checkbox" />
-              <span className="flex items-center justify-center uppercase">
-                m
-              </span>
-            </div>
-            <div className="sizes-item text-sm font-semibold text-outerspace w-full">
-              <input type="checkbox" />
-              <span className="flex items-center justify-center uppercase">
-                l
-              </span>
-            </div>
-            <div className="sizes-item text-sm font-semibold text-outerspace w-full">
-              <input type="checkbox" />
-              <span className="flex items-center justify-center uppercase">
-                xxl
-              </span>
-            </div>
-            <div className="sizes-item text-sm font-semibold text-outerspace w-full">
-              <input type="checkbox" />
-              <span className="flex items-center justify-center uppercase">
-                3xl
-              </span>
-            </div>
-            <div className="sizes-item text-sm font-semibold text-outerspace w-full">
-              <input type="checkbox" />
-              <span className="flex items-center justify-center uppercase">
-                4xl
-              </span>
-            </div>
-          </div>
-        </FilterWrap>
-      </SizesFilter>
-      <StyleFilter onClick={() => toggleFilter("style")}>
-        <FilterTitle className="flex items-center justify-between">
-          <p className="filter-title-text text-gray text-base font-semibold text-lg">
-            Dress Style
-          </p>
-          <span
-            className={`text-gray text-xl filter-title-icon ${
-              !isStyleFilterOpen ? "rotate" : ""
-            }`}
-          >
-            <i className="bi bi-chevron-up"></i>
-          </span>
-        </FilterTitle>
-        <FilterWrap className={`${!isStyleFilterOpen ? "hide" : "show"}`}>
-          {StyleFilterList?.map((styleFilter) => {
-            return (
-              <div className="style-filter-item" key={styleFilter.id}>
-                <button
-                  type="button"
-                  className="filter-item-head w-full flex items-center justify-between"
-                >
-                  <span className="filter-head-title text-base text-gray font-semibold">
-                    {styleFilter.title}
-                  </span>
-                  <span className="filter-head-icon text-gray">
-                    <i className="bi bi-chevron-right"></i>
-                  </span>
-                </button>
-              </div>
-            );
-          })}
-        </FilterWrap>
-      </StyleFilter>
-    </>
+            <FilterButton type="submit">Apply Filters</FilterButton>
+          </FilterForm>
+          <Divider /> {/* Vertical divider */}
+          <ProductList>
+            {filteredProducts.map(product => (
+              <ProductItem key={product._id} product={product} />
+            ))}
+          </ProductList>
+        </FilterPageWrapper>
+      </Container>
+    </Section>
   );
 };
 
-export default ProductFilter;
+export default FilterPage;

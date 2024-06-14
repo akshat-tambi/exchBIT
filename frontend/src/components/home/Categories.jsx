@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Container, Section } from "../../styles/styles";
 import Title from "../common/Title";
-import { savingZoneData } from "../../data/data";
+import { CategoriesData } from "../../data/data";
 import { BaseLinkOutlineWhite } from "../../styles/button";
 import { breakpoints } from "../../styles/themes/default";
 
@@ -107,44 +107,38 @@ const ProductCardOverlayWrapper = styled.div`
   }
 `;
 
-const SavingZone = () => {
+const Categories = () => {
   return (
     <Section>
       <Container>
-        <Title titleText={"Big Saving Zone"} />
+        <Title titleText={"Categories"} />
         <ProductGridWrapper className="grid">
-          {savingZoneData?.map((savingZone) => {
+          {CategoriesData?.map((Categories) => {
             return (
               <ProductCardOverlayWrapper
                 className="product-card-overlay text-white"
-                key={savingZone.id}
+                key={Categories.id}
               >
                 <img
-                  src={savingZone.imgSource}
+                  src={Categories.imgSource}
                   className="object-fit-cover"
                   alt=""
                 />
                 <div className="product-info text-end w-full h-full">
-                  {savingZone.isLimited && (
-                    <div className="info-badge text-white text-xs bg-outerspace inline-flex items-center justify-center">
-                      Limited Stock
-                    </div>
-                  )}
+                  
                   <h4 className="info-title font-semibold">
-                    {savingZone?.title}
+                    {Categories?.title}
                   </h4>
                   <p className="info-text text-base">
-                    {savingZone.description}
+                    {Categories.description}
                   </p>
-                  <p className="discount-text text-bold text-xxl uppercase">
-                    upto {savingZone.discount}% off
-                  </p>
+                  
                   <div className="info-arrow flex items-center justify-center text-xxl">
                     <i className="bi bi-arrow-down"></i>
                   </div>
                   <BaseLinkOutlineWhite
                     as={BaseLinkOutlineWhite}
-                    to="/"
+                    to={`/byCategory/${Categories.title.toLowerCase()}`}
                     className="uppercase"
                   >
                     shop now
@@ -159,4 +153,4 @@ const SavingZone = () => {
   );
 };
 
-export default SavingZone;
+export default Categories;
