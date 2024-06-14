@@ -5,47 +5,88 @@ import { User } from './models/user.model.js';
 import { Notification } from './models/notification.model.js';
 import { Product } from './models/products.model.js';
 import { Request } from './models/request.model.js';
-const redisClient = createClient();
 
-redisClient.on('error', (err) => console.log('Redis Client Error', err));
-await redisClient.connect();
+// const redisClient = createClient();
+
+// redisClient.on('error', (err) => console.log('Redis Client Error', err));
+// await redisClient.connect();
 
 const wss = new WebSocketServer({ noServer: true });
 
-wss.on('connection', (ws) => {
+const rooms = new Map();
+
+wss.on('connection', async (ws) => {
     ws.on('message', async (message) => {
         const parsedMessage = JSON.parse(message);
 
         switch (parsedMessage.type) {
+            case 'INITIATE_CHAT':
+                {
+                    const { productId, userId } = parsedMessage;
+                    const prod= await Product.findById(productId);
+                    const ownerId=prod.user;
+                   
+                    let chat = await Chat.findOne({ product: productId, owner: ownerId, user: userId });
+                    
+                    if(chat) { return; }
+                    else 
+                    {
+                        chat = new Chat({
+                            product: productId,
+                            owner: ownerId,
+                            user: userId,
+                            messages: []
+                        });
+                        await chat.save();
+
+                        // add chatId
+                        await User.findByIdAndUpdate(ownerId, { $push: { chats: chat._id } });
+                        await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } });
+                        
+                        const roomKey = chat._id.toString();
+                        rooms.set(roomKey, new Set());
+                        rooms.get(roomKey).add(ws);
+                        ws.roomKey = roomKey;
+
+                        ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: roomKey, messages: chat.messages }));
+                    }  
+                    break;
+                }
+
             case 'CHAT_MESSAGE':
+                {
+                    const { chatId, from, message: msg } = parsedMessage;
 
-                // to MongoDB
-                const chatMessage = new Chat({
-                    from: parsedMessage.from,
-                    to: parsedMessage.to,
-                    message: parsedMessage.message,
-                    timestamp: new Date(),
-                });
-                await chatMessage.save();
-                
-                // to Redis 
-                const chatKey = `chat:${parsedMessage.from}:${parsedMessage.to}`;
-                await redisClient.rPush(chatKey, JSON.stringify(chatMessage));
-
-                //  sender's array
-                await User.findByIdAndUpdate(parsedMessage.from, { $push: { chats: chatMessage._id } });
-                
-                // to receiver's chat array
-                await User.findByIdAndUpdate(parsedMessage.to, { $push: { chats: chatMessage._id } });
-
-                // message to other clients
-                wss.clients.forEach((client) => {
-                    if (client !== ws && client.readyState === WebSocket.OPEN) {
-                        client.send(JSON.stringify(chatMessage));
+                    let chat = await Chat.findById(chatId);
+                    if (!chat) {
+                        console.error('Chat not found');
+                        return;
                     }
-                });
-                break;
-                
+
+                    // handle room not existing
+                    const roomKey = chat._id.toString();
+                    if (!rooms.has(roomKey)) {
+                        rooms.set(roomKey, new Set());
+                       
+                        // adding ws client to the room
+                        rooms.get(roomKey).add(ws);
+                        ws.roomKey = roomKey;
+                    }
+
+                    // save msg
+                    const chatMessage = { from, message: msg, timestamp: new Date() };
+                    chat.messages.push(chatMessage);
+                    await chat.save();
+
+                    // send msg to all clients
+                    rooms.get(roomKey).forEach(client => {
+                        if (client !== ws && client.readyState === WebSocket.OPEN) {
+                            client.send(JSON.stringify({ type: 'CHAT_MESSAGE', chatId, chatMessage }));
+                        }
+                    });
+                    break;
+                }
+
                 case 'ACCEPT_REQUEST':
                     {
                         const acceptedRequest = await Request.findByIdAndUpdate(parsedMessage.requestId, { status: 'accepted' }, { new: true });
@@ -90,7 +131,7 @@ wss.on('connection', (ws) => {
                         break;
                     }
                 
-                    case 'REJECT_REQUEST':
+                case 'REJECT_REQUEST':
                     {
                         const rejectedRequest = await Request.findByIdAndUpdate(parsedMessage.requestId, { status: 'rejected' }, { new: true });
                         if (!rejectedRequest) {
@@ -111,7 +152,7 @@ wss.on('connection', (ws) => {
                         break;
                     }
                 
-                    case 'REQUEST_REQUEST':
+                case 'REQUEST_REQUEST':
                     {
                         const product = await Product.findById(parsedMessage.productId);
                         if (!product) {
@@ -144,7 +185,7 @@ wss.on('connection', (ws) => {
                         break;
                     }
                 
-                    case 'CANCEL_DEAL_OWNER':
+                case 'CANCEL_DEAL_OWNER':
                     {
                         const request = await Request.findByIdAndUpdate(parsedMessage.requestId, { status: 'cancelled' }, { new: true });
                         if (!request) {
@@ -174,7 +215,7 @@ wss.on('connection', (ws) => {
                         break;
                     }
                 
-                    case 'CANCEL_DEAL_USER':
+                case 'CANCEL_DEAL_USER':
                     {
                         const request = await Request.findByIdAndUpdate(parsedMessage.requestId, { status: 'cancelled' }, { new: true });
                         if (!request) {
@@ -203,10 +244,24 @@ wss.on('connection', (ws) => {
                         await User.findByIdAndUpdate(product.user, { $push: { notif: dealCancellationNotificationByUser._id } });
                         break;
                     }
-        default:
-            console.log('Unknown message type:', parsedMessage.type);
+
+            default:
+                console.log('Unknown message type:', parsedMessage.type);
+        }
+    });
+
+    ws.on('close', () => {
+        if (ws.roomKey && rooms.has(ws.roomKey)) {
+            rooms.get(ws.roomKey).delete(ws);
+            if (rooms.get(ws.roomKey).size === 0) {
+                rooms.delete(ws.roomKey);
+            }
         }
     });
 });
 
-export { wss, redisClient };
+export { wss};//, redisClient };
+
+
+
+
