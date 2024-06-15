@@ -17,7 +17,7 @@ await redisClient.connect();
 const wss = new WebSocketServer({ noServer: true });
 const rooms = new Map();
 
-const SYNC_INTERVAL_MS = 5*60*1000 ;
+const SYNC_INTERVAL_MS = 5*1000 ;
 
 // sync redis ->db
 async function syncRedisToMongo() {
@@ -80,7 +80,7 @@ wss.on('connection', async (ws) => {
                         if (chat || rooms.has(roomKey)) 
                             { 
                                 const chatMessages = await redisClient.lRange(`chat:${roomKey}`, 0, -1);
-                                return ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: roomKey, messages: chatMessages.map(msg => JSON.parse(msg)) || [] })); 
+                                return ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: chat._id, messages: chatMessages.map(msg => JSON.parse(msg)) || [] })); 
                             }
 
 
@@ -92,6 +92,7 @@ wss.on('connection', async (ws) => {
                         });
                         await chat.save();
                         
+                        
                         rooms.set(roomKey, new Set());
                         await User.findByIdAndUpdate(ownerId, { $push: { chats: chat._id } });
                         await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } });
@@ -101,65 +102,63 @@ wss.on('connection', async (ws) => {
                         ws.roomKey = roomKey;
 
                         const chatMessages = await redisClient.lRange(`chat:${roomKey}`, 0, -1);
-                        ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: roomKey, messages: chatMessages.map(msg => JSON.parse(msg)) || [] }));
+                        ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: chat._id, messages: chatMessages.map(msg => JSON.parse(msg)) || [] }));
                         break;
                     } catch (error) {console.log(error);}
                 }
 
             case 'CHAT_MESSAGE': {
-                    try
-                    {    let { chatId, from, message: msg } = parsedMessage;
+                try
+                {    let { chatId, from, message: msg } = parsedMessage;
+                
+                    let chat = await Chat.findById(chatId);
+                    let roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
                     
-                        // find the chat by chatId in MongoDB
-                        let chat = await Chat.findById(chatId);
+                    if(!rooms.get(roomKey))
+                    {
+                        const productId=chatId.product;
+                        const userId=chatId.user;
+                        const ownerId=chatId.owner;
                         
-                        let roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
+                        if(!chat)
+                        {
+                            chat = new Chat({
+                                product: productId,
+                                owner: ownerId,
+                                user: userId,
+                                messages: []
+                            });
+                            await chat.save();
+                            await User.findByIdAndUpdate(ownerId, { $push: { chats: chat._id } });
+                            await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } });
+                        }
                         
+                        roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
+                        // handling rooms
                         if(!rooms.get(roomKey))
                         {
-                            const productId=chatId.product;
-                            const userId=chatId.user;
-                            const ownerId=chatId.owner;
-                            
-                            if(!chat)
-                            {
-                                chat = new Chat({
-                                    product: productId,
-                                    owner: ownerId,
-                                    user: userId,
-                                    messages: []
-                                });
-                                await chat.save();
-                                await User.findByIdAndUpdate(ownerId, { $push: { chats: chat._id } });
-                                await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } });
-                            }
-                            
-                            roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
-                            // handling rooms
-                            if(!rooms.get(roomKey))
-                            {
-                                rooms.set(roomKey, new Set());
-                                rooms.get(roomKey).add(ws);
-                                ws.roomKey = roomKey;
-                            }
+                            rooms.set(roomKey, new Set());
+                            rooms.get(roomKey).add(ws);
+                            ws.roomKey = roomKey;
                         }
-                    
-                        
-                        // push msg to redis
-                        const chatMessage = { from, message: msg, timestamp: new Date() };
-                        await redisClient.rPush(`chat:${roomKey}`, JSON.stringify(chatMessage));
-                    
-                        // broadcast to all clients
-                        rooms.get(roomKey)?.forEach(client => {
-                            if (client !== ws && client.readyState === WebSocket.OPEN) {
-                                client.send(JSON.stringify({ type: 'CHAT_MESSAGE', chatId, chatMessage }));
-                            }
-                        });
-                    
-                        break;
-                    } catch(error) {console.log(error)}
-                }
+                    }
                 
+                    
+                    // push msg to redis
+                    const chatMessage = { from, message: msg, timestamp: new Date() };
+                    await redisClient.rPush(`chat:${roomKey}`, JSON.stringify(chatMessage));
+                
+                    // broadcast to all clients
+                    rooms.get(roomKey)?.forEach(client => {
+                        if (client !== ws && client.readyState === WebSocket.OPEN) {
+                            client.send(JSON.stringify({ type: 'CHAT_MESSAGE', chatId, chatMessage }));
+                        }
+                    });
+                
+                    break;
+                } catch(error) {console.log(error)}
+            }
+            
 
             case 'ACCEPT_REQUEST':
                 {

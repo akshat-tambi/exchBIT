@@ -231,7 +231,7 @@ const ProductDetailsScreen = () => {
             const message = JSON.parse(event.data);
             if (message.type === "CHAT_INITIATED") {
                 const { chatId } = message;
-                navigate(`/${chatId}`);
+                navigate(`/chat/${chatId}`, { replace: true });
             }
         };
 

@@ -26,7 +26,7 @@ import Account from "./screens/user/AccountScreen";
 import Address from "./screens/user/AddressScreen";
 import FilterPage from "./components/product/ProductFilter";
 // import ProductDetails from './components/product/ProductDetails';
-
+import ChatPage from "./screens/chat/ChatPage";
 
 function App() {
   return (
@@ -51,6 +51,7 @@ function App() {
             <Route path="/account/add" element={<Address />} />
             <Route path="/byCategory/:categoryName" element={<FilterPage />} /> 
             <Route path="/product/details/:productId" element={<ProductDetails/>} />
+            <Route path="/chat/:chatId" element={<ChatPage/> } />
           </Route>
 
           {/* auth screens */}
