@@ -21,7 +21,8 @@
     "react-slick": "^0.30.2",
     "sass": "^1.70.0",
     "slick-carousel": "^1.8.1",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.8",
+    "use-history": "^1.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

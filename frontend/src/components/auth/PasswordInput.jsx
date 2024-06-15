@@ -1,7 +1,7 @@
-import styled from "styled-components";
-import { FormElement, Input } from "../../styles/form";
-import { PropTypes } from "prop-types";
-import { useState } from "react";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { FormElement, Input } from '../../styles/form';
+import { PropTypes } from 'prop-types';
 
 const PasswordToggleButton = styled.button`
   position: absolute;
@@ -13,26 +13,27 @@ const PasswordToggleButton = styled.button`
   }
 `;
 
-const PasswordInput = ({ fieldName, name, errorMsg = "" }) => {
+const PasswordInput = ({ fieldName, name, value, onChange, errorMsg }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePassword = () => {
-    setShowPassword(!showPassword);
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
   return (
     <FormElement>
-      <label htmlFor="" className="form-elem-label">
+      <label htmlFor={name} className="form-elem-label">
         {fieldName}
       </label>
       <div className="form-elem-block">
         <Input
-          type={showPassword ? "text" : "password"}
+          type={showPassword ? 'text' : 'password'}
           placeholder=""
           name={name}
           className="form-elem-control"
+          value={value}
+          onChange={onChange}
         />
-
         <PasswordToggleButton
           type="button"
           className="pwd-value-toggle flex items-center"
@@ -51,15 +52,17 @@ const PasswordInput = ({ fieldName, name, errorMsg = "" }) => {
           )}
         </PasswordToggleButton>
       </div>
-      <span className="form-elem-error text-end font-medium">{errorMsg}</span>
+      {errorMsg && <span className="form-elem-error text-end font-medium">{errorMsg}</span>}
     </FormElement>
   );
 };
 
-export default PasswordInput;
-
 PasswordInput.propTypes = {
-  fieldName: PropTypes.string,
-  name: PropTypes.string,
+  fieldName: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
   errorMsg: PropTypes.string,
 };
+
+export default PasswordInput;

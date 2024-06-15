@@ -1,16 +1,13 @@
-import styled from "styled-components";
-import {
-  CheckboxGroup,
-  FormGridWrapper,
-  FormTitle,
-} from "../../styles/form_grid";
-import { Container } from "../../styles/styles";
-import { staticImages } from "../../utils/images";
-import AuthOptions from "../../components/auth/AuthOptions";
-import { FormElement, Input } from "../../styles/form";
-import PasswordInput from "../../components/auth/PasswordInput";
-import { Link } from "react-router-dom";
-import { BaseButtonBlack } from "../../styles/button";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { FormGridWrapper, FormTitle } from '../../styles/form_grid';
+import { Container } from '../../styles/styles';
+import { staticImages } from '../../utils/images';
+import { FormElement, Input } from '../../styles/form';
+import PasswordInput from '../../components/auth/PasswordInput';
+import { Link, useNavigate } from 'react-router-dom';
+import { BaseButtonBlack } from '../../styles/button';
+import axios from 'axios';
 
 const SignUpScreenWrapper = styled.section`
   form {
@@ -27,68 +24,102 @@ const SignUpScreenWrapper = styled.section`
 `;
 
 const SignUpScreen = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    username: '',
+    email: '',
+    password: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+   setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/users/register', formData);
+      alert(response.data.message);
+      navigate('/login');
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
   return (
     <SignUpScreenWrapper>
       <FormGridWrapper>
         <Container>
           <div className="form-grid-content">
             <div className="form-grid-left">
-              <img
-                src={staticImages.form_img2}
-                className="object-fit-cover"
-                alt=""
-              />
+              <img src={staticImages.form_img2} className="object-fit-cover" alt="" />
             </div>
             <div className="form-grid-right">
               <FormTitle>
                 <h3>Sign Up</h3>
                 <p className="text-base">
-                  Sign up for free to access to in any of our products
+                  Sign up for free to access to a vast range of products
                 </p>
               </FormTitle>
-              <AuthOptions />
-              <form>
+              <form onSubmit={handleSubmit}>
                 <FormElement>
-                  <label htmlFor="" className="forme-elem-label">
-                    User name or email address
+                  <label htmlFor="name" className="form-elem-label">
+                    Name
                   </label>
                   <Input
                     type="text"
                     placeholder=""
-                    name=""
+                    name="name"
                     className="form-elem-control"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
                   />
                   <span className="form-elem-error">
-                    *Please enter valid email address.
+                    *Required
                   </span>
                 </FormElement>
-                <PasswordInput fieldName="Password" name="password" />
+                <FormElement>
+                  <label htmlFor="username" className="form-elem-label">
+                    Username
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder=""
+                    name="username"
+                    className="form-elem-control"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                  />
+                  <span className="form-elem-error">
+                    *Required
+                  </span>
+                </FormElement>
+                <FormElement>
+                  <label htmlFor="email" className="form-elem-label">
+                    Email Id
+                  </label>
+                  <Input
+                    type="email"
+                    placeholder=""
+                    name="email"
+                    className="form-elem-control"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                  <span className="form-elem-error">
+                    *Required
+                  </span>
+                </FormElement>
+                <PasswordInput fieldName="Password" name="password" value={formData.password} onChange={handleChange} />
                 <span className="form-elem-text font-medium">
                   Use 8 or more characters with a mix of letters, numbers &
                   symbols
                 </span>
-
-                <CheckboxGroup>
-                  <li className="flex items-center">
-                    <input type="checkbox" />
-                    <span className="text-sm">
-                      Agree to our
-                      <Link to="/" className="text-underline">
-                        Terms of use
-                      </Link>
-                      <span className="text-space">and</span>
-                      <Link to="/" className="text-underline">
-                        Privacy Policy
-                      </Link>
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <input type="checkbox" />
-                    <span className="text-sm">
-                      Subscribe to our monthly newsletter
-                    </span>
-                  </li>
-                </CheckboxGroup>
                 <BaseButtonBlack type="submit" className="form-submit-btn">
                   Sign Up
                 </BaseButtonBlack>

@@ -70,6 +70,7 @@ const LoginUser=asyncHandler(async(req,res)=>{
 
    //check if data is filled fully
    if(!username || !password || !email){
+    console.log(req.body);
     throw new ApiError(401,"all details are missing");
    }
 
