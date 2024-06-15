@@ -25,6 +25,7 @@ const ProductList = () => {
     const fetchProducts = async () => {
       try {
         const productsData = await getAllProducts();
+        setProducts(productsData.data);
         setProducts(productsData);
       } catch (error) {
         console.error('Error fetching products:', error.message);
