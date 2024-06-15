@@ -9,6 +9,8 @@ import { getProductById } from "../../services/productService";
 import { breakpoints, defaultTheme } from "../../styles/themes/default";
 import { useParams } from "react-router-dom";
 import { currencyFormat } from "../../utils/helper";
+import axios from 'axios';
+import { useNavigate} from "react-router-dom";
 
 const DetailsContent = styled.div`
   display: grid;
@@ -185,6 +187,7 @@ const ProductDetailsScreen = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -202,6 +205,51 @@ const ProductDetailsScreen = () => {
       fetchProductDetails();
     }
   }, [productId]);
+
+
+  const handleAddToCart = async () => {
+    try {
+        const response = await axios.post("http://localhost:8000/api/v1/users/protectedRoute", {}, {
+            withCredentials: true, 
+        });
+
+        const userId = response.data.data;
+
+        if (!userId) {
+            console.log("Error in authentication");
+            alert("Error in authentication, please log in again.");
+            return;
+        }
+
+        const ws = new WebSocket("ws://localhost:8000");
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ type: "INITIATE_CHAT", productId, userId }));
+        };
+
+        ws.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === "CHAT_INITIATED") {
+                const { chatId } = message;
+                navigate(`/${chatId}`);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket error:", error);
+            alert("An error occurred with the WebSocket connection. Please try again later.");
+        };
+
+        ws.onclose = () => {
+            console.log("WebSocket connection closed");
+        };
+    } catch (error) {
+        console.error("Error in handleAddToCart:", error);
+        alert("An error occurred. Please try again later.");
+    }
+};
+
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
@@ -221,7 +269,7 @@ const ProductDetailsScreen = () => {
             <div>
               <PriceText>Price: {currencyFormat(product.price)}</PriceText>
             </div>
-            <AddToCartButton className="prod-add-btn">
+            <AddToCartButton className="prod-add-btn" onClick={handleAddToCart}>
               <span className="bi bi-cart2" />
               <span className="prod-add-btn-text">Add to cart</span>
             </AddToCartButton>

@@ -77,7 +77,12 @@ wss.on('connection', async (ws) => {
                         let chat = await Chat.findOne({ product: productId, owner: ownerId, user: userId });
                         const roomKey = `${productId}:${ownerId}:${userId}`;
 
-                        if (chat || rooms.has(roomKey)) { return ws.send(JSON.stringify({msg:"error exists"})) ;}
+                        if (chat || rooms.has(roomKey)) 
+                            { 
+                                const chatMessages = await redisClient.lRange(`chat:${roomKey}`, 0, -1);
+                                return ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: roomKey, messages: chatMessages.map(msg => JSON.parse(msg)) || [] })); 
+                            }
+
 
                         chat = new Chat({
                             product: productId,
