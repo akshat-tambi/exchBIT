@@ -7,8 +7,6 @@ import {
   deleteProduct,
   getUserProducts,
   getAllProducts,
-  getUserCartProducts,
-  getUserWishlistProducts,
   getProductById,
   getProductByCategory
 } from "../controllers/products.controller.js";

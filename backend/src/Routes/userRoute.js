@@ -10,7 +10,7 @@ router.route("/WishList").get(verifyJWT,WishListFetch)
 router.route("/ExtractCart").get(verifyJWT,ExtractCart);
 
 router.route("/logout").post(verifyJWT,LogoutUser);
-router.route("/protectedRote").post(verifyJWT,RetrieveUser);
+router.route("/protectedRoute").post(verifyJWT,RetrieveUser);
 router.route("/RefreshToken").post(refreshAccesToken);
 
 export default router;
