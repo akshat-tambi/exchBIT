@@ -10,6 +10,14 @@ const redisClient = createClient({
     url: 'redis://localhost:6379'
 });
 
+function broadcastToRoom(roomKey, message) {
+    rooms.get(roomKey)?.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(message));
+        }
+    });
+}
+
 redisClient.on('error', (err) => console.log('Redis Client Error', err));
 
 await redisClient.connect();
@@ -17,7 +25,7 @@ await redisClient.connect();
 const wss = new WebSocketServer({ noServer: true });
 const rooms = new Map();
 
-const SYNC_INTERVAL_MS = 5*1000 ;
+const SYNC_INTERVAL_MS = 5*1000*60 ;
 
 // sync redis ->db
 async function syncRedisToMongo() {
@@ -66,62 +74,58 @@ wss.on('connection', async (ws) => {
         const parsedMessage = JSON.parse(message);
 
         switch (parsedMessage.type) {
-            case 'INITIATE_CHAT':
-                {
-                    try 
-                    {
-                        const { productId, userId } = parsedMessage;
-                        const prod = await Product.findById(productId);
-                        const ownerId = prod.user;
-
-                        let chat = await Chat.findOne({ product: productId, owner: ownerId, user: userId });
-                        const roomKey = `${productId}:${ownerId}:${userId}`;
-
-                        if (chat || rooms.has(roomKey)) 
-                            { 
-                                const chatMessages = await redisClient.lRange(`chat:${roomKey}`, 0, -1);
-                                return ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: chat._id, messages: chatMessages.map(msg => JSON.parse(msg)) || [] })); 
-                            }
-
-
-                        chat = new Chat({
-                            product: productId,
-                            owner: ownerId,
-                            user: userId,
-                            messages: []
-                        });
-                        await chat.save();
-                        
-                        
-                        rooms.set(roomKey, new Set());
-                        await User.findByIdAndUpdate(ownerId, { $push: { chats: chat._id } });
-                        await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } });
-
-                        
-                        rooms.get(roomKey).add(ws);
-                        ws.roomKey = roomKey;
-
+            case 'INITIATE_CHAT': {
+                try {
+                    const { productId, userId } = parsedMessage;
+                    const prod = await Product.findById(productId);
+                    const ownerId = prod.user;
+                    const roomKey = `${productId}:${ownerId}:${userId}`;
+            
+                    let chat = await Chat.findOne({ product: productId, owner: ownerId, user: userId });
+            
+                    if (chat || rooms.has(roomKey)) {
                         const chatMessages = await redisClient.lRange(`chat:${roomKey}`, 0, -1);
                         ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: chat._id, messages: chatMessages.map(msg => JSON.parse(msg)) || [] }));
-                        break;
-                    } catch (error) {console.log(error);}
+                        return;
+                    }
+            
+                    chat = new Chat({
+                        product: productId,
+                        owner: ownerId,
+                        user: userId,
+                        messages: []
+                    });
+                    await chat.save();
+            
+                    if (!rooms.has(roomKey)) {
+                        rooms.set(roomKey, new Set());
+                    }
+            
+                    rooms.get(roomKey).add(ws);
+                    ws.roomKey = roomKey;
+            
+                    const chatMessages = await redisClient.lRange(`chat:${roomKey}`, 0, -1);
+                    ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: chat._id, messages: chatMessages.map(msg => JSON.parse(msg)) || [] }));
+            
+                } catch (error) {
+                    console.log("Error handling INITIATE_CHAT:", error);
                 }
-
+                break;
+            }
+            
             case 'CHAT_MESSAGE': {
-                try
-                {    let { chatId, from, message: msg } = parsedMessage;
-                
+                try {
+                    let { chatId, from, message: msg } = parsedMessage;
                     let chat = await Chat.findById(chatId);
                     let roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
-                    
-                    if(!rooms.get(roomKey))
-                    {
-                        const productId=chatId.product;
-                        const userId=chatId.user;
-                        const ownerId=chatId.owner;
-                        
-                        if(!chat)
-                        {
+            
+                    if (!rooms.has(roomKey)) {
+                        console.log("Room not found, initializing...");
+                        const productId = chat.product;
+                        const userId = chat.user;
+                        const ownerId = chat.owner;
+            
+                        if (!chat) {
                             chat = new Chat({
                                 product: productId,
                                 owner: ownerId,
@@ -132,33 +136,58 @@ wss.on('connection', async (ws) => {
                             await User.findByIdAndUpdate(ownerId, { $push: { chats: chat._id } });
                             await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } });
                         }
-                        
+            
                         roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
-                        // handling rooms
-                        if(!rooms.get(roomKey))
-                        {
-                            rooms.set(roomKey, new Set());
-                            rooms.get(roomKey).add(ws);
-                            ws.roomKey = roomKey;
-                        }
+                        rooms.set(roomKey, new Set());
                     }
-                
-                    
-                    // push msg to redis
+            
+                    // current client 
+                    if (!rooms.get(roomKey).has(ws)) {
+                        rooms.get(roomKey).add(ws);
+                        ws.roomKey = roomKey;
+                    }
+            
+                    // push to redis
                     const chatMessage = { from, message: msg, timestamp: new Date() };
                     await redisClient.rPush(`chat:${roomKey}`, JSON.stringify(chatMessage));
-                
-                    // broadcast to all clients
-                    rooms.get(roomKey)?.forEach(client => {
-                        if (client !== ws && client.readyState === WebSocket.OPEN) {
-                            client.send(JSON.stringify({ type: 'CHAT_MESSAGE', chatId, chatMessage }));
-                        }
-                    });
-                
-                    break;
-                } catch(error) {console.log(error)}
-            }
             
+                    
+                    broadcastToRoom(roomKey, { type: 'CHAT_MESSAGE', chatId, chatMessage });
+            
+                } catch (error) {
+                    console.log("Error handling CHAT_MESSAGE:", error);
+                }
+                break;
+            }            
+            
+            case 'JOIN_ROOM':
+                {
+                    try {
+                        const { chatId } = parsedMessage;
+                        const chat = await Chat.findById(chatId);
+                        if (!chat) {
+                            console.error(`Chat with ID ${chatId} not found`);
+                            return;
+                        }
+                
+                        const roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
+                
+                        
+                        if (!rooms.has(roomKey)) {
+                            rooms.set(roomKey, new Set());
+                        }
+                
+                        rooms.get(roomKey).add(ws);
+                        ws.roomKey = roomKey;
+                
+                        console.log(`WebSocket client joined room for chat ID: ${chatId}`);
+                
+                        ws.send(JSON.stringify({ type: 'ROOM_JOINED', chatId }));
+                    } catch (error) {
+                        console.error('Error joining room:', error);
+                    }
+                    break;
+                }
 
             case 'ACCEPT_REQUEST':
                 {
@@ -358,4 +387,3 @@ wss.on('close', async () => {
 });
 
 export { wss, redisClient };
-

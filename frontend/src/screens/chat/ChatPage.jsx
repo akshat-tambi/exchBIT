@@ -78,36 +78,44 @@ const ChatPage = () => {
       }
     };
 
+    const connectWebSocket = () => {
+      ws.current = new WebSocket("ws://localhost:8000");
+
+      ws.current.onopen = () => {
+        console.log('WebSocket connection opened');
+        
+        // Send JOIN_ROOM message when WebSocket connection is established
+        if (chatId && userId) {
+          ws.current.send(JSON.stringify({ type: 'JOIN_ROOM', chatId }));
+        }
+      };
+
+      ws.current.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === 'CHAT_MESSAGE') {
+          const { chatMessage } = message;
+          setMessages(prevMessages => [...prevMessages, chatMessage]);
+        }
+      };
+
+      ws.current.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.current.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+    };
+
     fetchUserId(); 
-    ws.current = new WebSocket("ws://localhost:8000");
-
-    ws.current.onopen = () => {
-      console.log('WebSocket connection opened');
-    };
-
-    ws.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === 'CHAT_MESSAGE') {
-       
-        const { chatMessage } = message;
-        setMessages(prevMessages => [...prevMessages, chatMessage]);
-      }
-    };
-
-    ws.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    ws.current.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
+    connectWebSocket();
 
     return () => {
       if (ws.current) {
         ws.current.close();
       }
     };
-  }, []); 
+  }, [chatId, userId]); 
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
