@@ -110,6 +110,22 @@ const UserMenu = () => {
           </li>
           <li className="nav-menu-item">
             <Link
+              to="/NewProduct"
+              className={`nav-menu-link flex items-center ${
+                location.pathname === "/NewProduct" 
+                
+              }`}
+            >
+              <span className="nav-link-icon flex items-center justify-center">
+                <img src="./assets/icons/ac_orders.svg" alt="" />
+              </span>
+              <span className="text-base font-semibold nav-link-text no-wrap">
+                CreateYourProduct
+              </span>
+            </Link>
+          </li>
+          <li className="nav-menu-item">
+            <Link
               to="/account"
               className={`nav-menu-link flex items-center ${
                 location.pathname === "/account" ||
