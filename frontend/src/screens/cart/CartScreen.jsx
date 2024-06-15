@@ -53,6 +53,7 @@ const CartScreen = () => {
     { label: "Home", link: "/cart" },
     { label: "Add To Cart", link: "" },
   ];
+
   return (
     <CartPageWrapper>
       <Container>

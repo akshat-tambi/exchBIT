@@ -21,8 +21,6 @@ router.put("/:id", verifyJWT, upload.array('newMedia', 10), updateProduct); //
 router.delete("/:id", verifyJWT, deleteProduct);//
 router.get("/user", verifyJWT, getUserProducts);//
 router.get("/", getAllProducts);//
-router.get("/cart", verifyJWT, getUserCartProducts);//
-router.get("/wishlist", verifyJWT, getUserWishlistProducts);//
 router.get("/:id", getProductById);//
 router.get('/category/:categoryName', getProductByCategory); // Route for getting products by category
 

@@ -193,8 +193,6 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "Product deleted successfully" });
 });
 
-
-
 export const getUserProducts = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
@@ -216,35 +214,6 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "An error occurred while fetching all products" });
-  }
-});
-
-export const getUserCartProducts = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    const user = await User.findById(userId).populate('cart');
-    if (!user) throw new ApiError(404, "User not found");
-    
-    res.status(200).json({ success: true, cartProducts: user.cart });
-    
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred while fetching user's cart products" });
-  }
-});
-
-export const getUserWishlistProducts = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    const user = await User.findById(userId).populate('wishList');
-    if (!user) throw new ApiError(404, "User not found");
-
-    res.status(200).json({ success: true, wishlistProducts: user.wishList });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred while fetching user's wishlist products" });
   }
 });
 

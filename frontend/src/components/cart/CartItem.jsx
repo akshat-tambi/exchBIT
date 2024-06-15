@@ -64,16 +64,16 @@ const CartItem = ({ cartItem }) => {
       <td>
         <div className="cart-tbl-prod grid">
           <div className="cart-prod-img">
-            <img src={cartItem.imgSource} className="object-fit-cover" alt="" />
+            <img src={cartItem.media[0]} className="object-fit-cover" alt="" />
           </div>
           <div className="cart-prod-info">
-            <h4 className="text-base">{cartItem.title}</h4>
+            <h4 className="text-base">{cartItem.pName}</h4>
             <p className="text-sm text-gray inline-flex">
-              <span className="font-semibold">Color: </span> {cartItem.color}
+              <span className="font-semibold">desc: </span> {cartItem.desc}
             </p>
             <p className="text-sm text-gray inline-flex">
               <span className="font-semibold">Size:</span>
-              {cartItem.size}
+              {cartItem.status}
             </p>
           </div>
         </div>
@@ -97,14 +97,14 @@ const CartItem = ({ cartItem }) => {
         </div>
       </td>
       <td>
-        <span className="cart-tbl-shipping uppercase text-silver font-bold">
+        {/* <span className="cart-tbl-shipping uppercase text-silver font-bold">
           {cartItem.shipping === 0 ? "Free" : cartItem.shipping}
-        </span>
+        </span> */}
       </td>
       <td>
-        <span className="text-lg font-bold text-outerspace">
+        {/* <span className="text-lg font-bold text-outerspace">
           ${cartItem.price * cartItem.quantity}
-        </span>
+        </span> */}
       </td>
       <td>
         <div className="cart-tbl-actions flex justify-center">

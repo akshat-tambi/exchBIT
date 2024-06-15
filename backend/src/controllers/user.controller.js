@@ -201,5 +201,19 @@ const RetrieveUser=asyncHandler((req,res)=>{
      )
 })
 
-export {registerUser,LoginUser,LogoutUser,refreshAccesToken,editUser,WishListFetch,RetrieveUser}
+const ExtractCart=asyncHandler(async(req,res)=>{
+     const userId=req.user._id;
+
+     if(!userId){
+        throw new ApiError(501,"id is not fetched");
+    }
+
+    const cartDetail=await User.findById(userId).populate('cart');
+    if(!cartDetail){
+        throw new ApiError(501,"error in retrieving the cart");
+    }
+    res.status(200).json(new ApiResponse(200, cartDetail.wishList, "Wishlist fetched successfully"));
+})
+
+export {registerUser,LoginUser,LogoutUser,refreshAccesToken,editUser,WishListFetch,RetrieveUser,ExtractCart}
 

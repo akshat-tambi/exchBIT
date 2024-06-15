@@ -67,6 +67,31 @@ const CartTable = ({ cartItems }) => {
     "Action",
   ];
 
+  const [data, setData] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchWishList();
+  }, []);
+
+  const fetchWishList = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('/api/v1/users/ExtractCart');
+      
+      if (Array.isArray(response.data)) {
+        setData(response.data);
+      } else {
+        setData([]); 
+      }
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ScrollbarXWrapper>
       <CartTableWrapper className="w-full">
@@ -85,7 +110,7 @@ const CartTable = ({ cartItems }) => {
           </tr>
         </thead>
         <tbody>
-          {cartItems.map((cartItem) => {
+          {data.map((cartItem) => {
             return <CartItem key={cartItem.id} cartItem={cartItem} />;
           })}
         </tbody>
