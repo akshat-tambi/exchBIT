@@ -16,6 +16,7 @@ const BaseLayout = () => {
       >
         <Outlet />
       </div>
+      
       <Footer />
     </PageWrapper>
   );

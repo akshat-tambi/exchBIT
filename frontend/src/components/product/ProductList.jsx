@@ -31,7 +31,7 @@ const ProductList = () => {
         setError('Failed to fetch products. Please try again later.'); // Set error state
       }
     };
-    fetchProducts();
+    fetchProducts(); 
   }, []);
 
   if (error) {
