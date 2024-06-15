@@ -130,6 +130,7 @@ const LogoutUser=asyncHandler((req,res)=>{
      .clearCookie("refreshToken",options)
      .json(new ApiResponse(200,{},"user logged out successfully"))
 })
+
 const refreshAccesToken=asyncHandler(async(req,res)=>{
      const token=req.cookie.refreshToken || req.body
 
@@ -159,7 +160,7 @@ const refreshAccesToken=asyncHandler(async(req,res)=>{
 const editUser=asyncHandler(async(req,res)=>{
     const {name,username}=req.body;
 
-    const id=req.user;
+    const id=req.user._id;
     const updateFind=await User.findByIdAndUpdate(id,
         {
             $set:{
@@ -172,5 +173,33 @@ const editUser=asyncHandler(async(req,res)=>{
         res.status(201).json(new ApiResponse(201,updateFind,"user data is updated"));
 })
 
-export {registerUser,LoginUser,LogoutUser,refreshAccesToken,editUser}
+const WishListFetch=asyncHandler(async(req,res)=>{
+    console.log("user",req.user);
+    const userId = req.user._id;
+
+    
+
+    if(!userId){
+        
+        throw new ApiError(501,"id is not fetched");
+    }
+
+    const user = await User.findById(userId).populate('wishList');
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    res.status(200).json(new ApiResponse(200, user.wishList, "Wishlist fetched successfully"));
+
+
+})
+const RetrieveUser=asyncHandler((req,res)=>{
+     const userId=req.user._id;
+
+     res.status(201).json(
+        new ApiResponse(201,userId)
+     )
+})
+
+export {registerUser,LoginUser,LogoutUser,refreshAccesToken,editUser,WishListFetch,RetrieveUser}
 
