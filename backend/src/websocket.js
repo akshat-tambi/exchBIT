@@ -104,11 +104,40 @@ wss.on('connection', async (ws) => {
                     rooms.get(roomKey).add(ws);
                     ws.roomKey = roomKey;
             
+                    await User.findByIdAndUpdate(ownerId, { $push: { chats: chat._id } });
+                    await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } });
+            
                     const chatMessages = await redisClient.lRange(`chat:${roomKey}`, 0, -1);
                     ws.send(JSON.stringify({ type: 'CHAT_INITIATED', chatId: chat._id, messages: chatMessages.map(msg => JSON.parse(msg)) || [] }));
             
                 } catch (error) {
                     console.log("Error handling INITIATE_CHAT:", error);
+                }
+                break;
+            }
+            
+            case 'JOIN_ROOM': {
+                try {
+                    const { chatId } = parsedMessage;
+                    const chat = await Chat.findById(chatId);
+                    if (!chat) {
+                        console.error(`Chat with ID ${chatId} not found`);
+                        return;
+                    }
+            
+                    const roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
+            
+                    if (!rooms.has(roomKey)) {
+                        rooms.set(roomKey, new Set());
+                    }
+            
+                    rooms.get(roomKey).add(ws);
+                    ws.roomKey = roomKey;
+            
+                    console.log(`WebSocket client joined room for chat ID: ${chatId}`);
+                    ws.send(JSON.stringify({ type: 'ROOM_JOINED', chatId }));
+                } catch (error) {
+                    console.error('Error joining room:', error);
                 }
                 break;
             }
@@ -121,73 +150,25 @@ wss.on('connection', async (ws) => {
             
                     if (!rooms.has(roomKey)) {
                         console.log("Room not found, initializing...");
-                        const productId = chat.product;
-                        const userId = chat.user;
-                        const ownerId = chat.owner;
-            
-                        if (!chat) {
-                            chat = new Chat({
-                                product: productId,
-                                owner: ownerId,
-                                user: userId,
-                                messages: []
-                            });
-                            await chat.save();
-                            await User.findByIdAndUpdate(ownerId, { $push: { chats: chat._id } });
-                            await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } });
-                        }
-            
-                        roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
                         rooms.set(roomKey, new Set());
                     }
             
-                    // current client 
                     if (!rooms.get(roomKey).has(ws)) {
                         rooms.get(roomKey).add(ws);
                         ws.roomKey = roomKey;
                     }
             
-                    // push to redis
                     const chatMessage = { from, message: msg, timestamp: new Date() };
                     await redisClient.rPush(`chat:${roomKey}`, JSON.stringify(chatMessage));
             
-                    
                     broadcastToRoom(roomKey, { type: 'CHAT_MESSAGE', chatId, chatMessage });
             
                 } catch (error) {
                     console.log("Error handling CHAT_MESSAGE:", error);
                 }
                 break;
-            }            
+            }
             
-            case 'JOIN_ROOM':
-                {
-                    try {
-                        const { chatId } = parsedMessage;
-                        const chat = await Chat.findById(chatId);
-                        if (!chat) {
-                            console.error(`Chat with ID ${chatId} not found`);
-                            return;
-                        }
-                
-                        const roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
-                
-                        
-                        if (!rooms.has(roomKey)) {
-                            rooms.set(roomKey, new Set());
-                        }
-                
-                        rooms.get(roomKey).add(ws);
-                        ws.roomKey = roomKey;
-                
-                        console.log(`WebSocket client joined room for chat ID: ${chatId}`);
-                
-                        ws.send(JSON.stringify({ type: 'ROOM_JOINED', chatId }));
-                    } catch (error) {
-                        console.error('Error joining room:', error);
-                    }
-                    break;
-                }
 
             case 'ACCEPT_REQUEST':
                 {

@@ -8,52 +8,72 @@ const ChatPageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 10px;
+  padding: 20px;
+  background-color: #f0f0f0;
 `;
 
 const ChatMessages = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 20px;
   border: 1px solid #ccc;
-  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: #fff;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Increase vertical spacing between messages */
 `;
 
 const ChatMessage = styled.div`
-  margin: 5px 0;
+  max-width: 70%;
+  background-color: ${props => props.isOwnMessage ? '#dcf8c6' : '#e1f0ff'};
+  color: black;
   padding: 10px;
-  border-radius: 5px;
-`;
+  border-radius: 10px;
+  word-break: break-word;
+  align-self: ${props => props.isOwnMessage ? 'flex-end' : 'flex-start'};
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-const MyMessage = styled.div`
-  background-color: #dcf8c6;
-  align-self: flex-end;
-`;
-
-const TheirMessage = styled.div`
-  background-color: #fff;
-  align-self: flex-start;
+  &::before {
+    content: "${props => props.showSender ? (props.isOwnMessage ? 'You:' : 'Owner:') : ''}";
+    position: absolute;
+    top: -18px;
+    left: 10px;
+    font-size: 12px;
+    color: grey;
+    white-space: nowrap; /* Ensure the text does not wrap */
+  }
 `;
 
 const ChatInput = styled.div`
   display: flex;
   gap: 10px;
+  margin-top: 20px;
 `;
 
 const ChatInputField = styled.input`
   flex: 1;
-  padding: 10px;
+  padding: 15px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const ChatSendButton = styled.button`
-  padding: 10px 20px;
+  padding: 15px 20px;
   border: none;
-  border-radius: 5px;
-  background-color: #007bff;
+  border-radius: 10px;
+  background-color: rgba(83, 178, 172, 1);
   color: white;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: rgba(83, 178, 172, 0.8);
+  }
 `;
 
 const ChatPage = () => {
@@ -127,15 +147,20 @@ const ChatPage = () => {
     }
   };
 
+
   return (
     <ChatPageWrapper>
       <h2>Chat Room: {chatId}</h2>
       <ChatMessages>
-        {messages.map((msg, index) => (
-          <ChatMessage key={index} className={msg.from === userId ? 'my-message' : 'their-message'}>
-            <p>{msg.message}</p>
-          </ChatMessage>
-        ))}
+        {messages.map((msg, index) => {
+          const isOwnMessage = msg.from === userId;
+          const showSender = index === 0 || messages[index - 1].from !== msg.from;
+          return (
+            <ChatMessage key={index} isOwnMessage={isOwnMessage} showSender={showSender}>
+              <p>{msg.message}</p>
+            </ChatMessage>
+          );
+        })}
       </ChatMessages>
       <ChatInput>
         <ChatInputField
