@@ -84,7 +84,6 @@ const ChatPage = () => {
       ws.current.onopen = () => {
         console.log('WebSocket connection opened');
         
-        // Send JOIN_ROOM message when WebSocket connection is established
         if (chatId && userId) {
           ws.current.send(JSON.stringify({ type: 'JOIN_ROOM', chatId }));
         }
