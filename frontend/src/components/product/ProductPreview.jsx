@@ -1,10 +1,13 @@
+import React, { useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { useState } from "react";
 import { breakpoints, defaultTheme } from "../../styles/themes/default";
 
+const lightLineColor = "83, 178, 172"; // RGB values for the light line color
+
 const ProductPreviewWrapper = styled.div`
-  grid-template-columns: 72px auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 24px;
 
   @media (max-width: ${breakpoints.xl}) {
@@ -19,69 +22,82 @@ const ProductPreviewWrapper = styled.div`
   @media (max-width: ${breakpoints.xs}) {
     grid-template-columns: 100%;
   }
+`;
 
-  .preview-items {
-    @media (max-width: ${breakpoints.xs}) {
-      width: 80%;
-      margin-right: auto;
-      margin-left: auto;
-      order: 2;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
+const PreviewItems = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @media (max-width: ${breakpoints.sm}) {
+    flex-direction: row;
+    justify-content: center;
+  }
+`;
+
+const PreviewItemWrapper = styled.div`
+  width: 70px;
+  height: 70px;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: ${defaultTheme.default_transition};
+
+  @media (max-width: ${breakpoints.sm}) {
+    width: 40px;
+    height: 40px;
+  }
+
+  &:hover {
+    .preview-item {
+      border: 1px solid rgba(${lightLineColor}, 0.7); /* Light line outline on hover */
     }
   }
 
   .preview-item {
-    width: 70px;
-    height: 70px;
-    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     border-radius: 8px;
-    cursor: pointer;
-    transition: ${defaultTheme.default_transition};
+    border: 1px solid transparent; /* Initially no border */
+    transition: border-color ${defaultTheme.default_transition};
 
-    @media (max-width: ${breakpoints.sm}) {
-      width: 40px;
-      height: 40px;
-    }
-
-    &:hover {
-      opacity: 0.9;
-      outline: 1px solid ${defaultTheme.color_gray};
-    }
-
-    &-wrapper {
-      padding-top: 4px;
-      padding-bottom: 4px;
-
-      @media (max-width: ${breakpoints.xs}) {
-        display: flex;
-        justify-content: center;
-      }
-    }
-  }
-
-  .preview-display {
-    height: 600px;
-    overflow: hidden;
-
-    @media (max-width: ${breakpoints.md}) {
-      height: 520px;
-    }
-
-    @media (max-width: ${breakpoints.sm}) {
-      height: 400px;
-    }
-
-    @media (max-width: ${breakpoints.xs}) {
-      height: 320px;
+    @media (hover: none) {
+      border: 1px solid transparent; /* No border on devices that don't support hover */
     }
   }
 `;
 
+const PreviewDisplay = styled.div`
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(${lightLineColor}, 0.3); /* Thin light line outline */
+  transition: border-color ${defaultTheme.default_transition};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px; /* Rounded corners for larger preview */
+    border: 1px solid transparent; /* Initially no border */
+    transition: border-color ${defaultTheme.default_transition};
+  }
+
+  @media (max-width: ${breakpoints.sm}) {
+    height: 400px;
+  }
+
+  @media (max-width: ${breakpoints.xs}) {
+    height: 320px;
+  }
+`;
+
 const ProductPreview = ({ previewImages }) => {
-  
   const [activePreviewImage, setActivePreviewImage] = useState(
     previewImages.length > 0 ? previewImages[0] : ""
   );
@@ -91,37 +107,33 @@ const ProductPreview = ({ previewImages }) => {
   };
 
   return (
-    <ProductPreviewWrapper className="grid items-center">
-      <div className="preview-items w-full">
+    <ProductPreviewWrapper>
+      <PreviewItems>
         {previewImages.map((previewImage, index) => (
-          <div
-            className="preview-item-wrapper"
+          <PreviewItemWrapper
             key={index}
             onClick={() => handlePreviewImageChange(previewImage)}
           >
-            <div className="preview-item">
-              <img
-                src={previewImage}
-                alt={`Preview ${index}`}
-                className="object-fit-cover"
-              />
-            </div>
-          </div>
+            <img
+              src={previewImage}
+              alt={`Preview ${index}`}
+              className="preview-item"
+            />
+          </PreviewItemWrapper>
         ))}
-      </div>
-      <div className="preview-display">
+      </PreviewItems>
+      <PreviewDisplay>
         <img
           src={activePreviewImage}
           alt="Active Preview"
-          className="object-fit-cover"
         />
-      </div>
+      </PreviewDisplay>
     </ProductPreviewWrapper>
   );
 };
 
-export default ProductPreview;
-
 ProductPreview.propTypes = {
   previewImages: PropTypes.arrayOf(PropTypes.string.isRequired),
 };
+
+export default ProductPreview;

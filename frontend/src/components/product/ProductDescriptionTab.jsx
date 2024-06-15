@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Title from "../common/Title";
-import { ContentStylings } from "../../styles/styles";
-import { breakpoints, defaultTheme } from "../../styles/themes/default";
+import { breakpoints } from "../../styles/themes/default";
 
 const DetailsContent = styled.div`
   margin-top: 0;
@@ -11,19 +9,28 @@ const DetailsContent = styled.div`
   }
 `;
 
+const DescriptionBox = styled.div`
+  background-color: #f2f2f2; /* Slightly darker color */
+  padding: 20px;
+  border-radius: 8px;
+  height: 270px; /* Fixed height */
+  overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+`;
+
 const DescriptionText = styled.p`
-  margin-top: 12px; /* Adjust margin as needed */
+  margin-top: 0; /* Remove default margin */
+  margin-bottom: 12px; /* Adjust margin as needed */
 `;
 
 const ProductDescriptionTab = ({ description }) => {
   return (
     <>
-    
-    <DetailsContent>
-      <DescriptionText>{description}</DescriptionText>
-      
-      {/* Additional content or specifications can be added here */}
-    </DetailsContent>
+      <DetailsContent>
+        <DescriptionBox>
+          <DescriptionText>{description}</DescriptionText>
+        </DescriptionBox>
+        {/* Additional content or specifications can be added here */}
+      </DetailsContent>
     </>
   );
 };

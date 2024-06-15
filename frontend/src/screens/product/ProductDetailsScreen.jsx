@@ -3,23 +3,19 @@ import styled from "styled-components";
 import Breadcrumb from "../../components/common/Breadcrumb";
 import ProductPreview from "../../components/product/ProductPreview";
 import ProductDescriptionTab from "../../components/product/ProductDescriptionTab";
-import ProductDescriptionMedia from "../../components/product/ProductDescriptionMedia";
-import Title from "../../components/common/Title";
 import ProductSimilar from "../../components/product/ProductSimilar";
+import Title from "../../components/common/Title";
 import { getProductById } from "../../services/productService";
 import { breakpoints, defaultTheme } from "../../styles/themes/default";
 import { useParams } from "react-router-dom";
 import { currencyFormat } from "../../utils/helper";
 
-const DetailsScreenWrapper = styled.main`
-  margin: 40px 20px; /* Adjusted margin */
-`;
-
 const DetailsContent = styled.div`
   display: grid;
   grid-template-columns: 1fr 1px 1fr;
   gap: 40px;
-
+  padding-left: 20px; /* Add left padding */
+  
   @media (max-width: ${breakpoints.xl}) {
     gap: 24px;
     grid-template-columns: 3fr 1px 2fr;
@@ -100,9 +96,6 @@ const ProductSizeWrapper = styled.div`
   }
 `;
 
-
-
-
 const ProductColorWrapper = styled.div`
   margin-top: 32px;
 
@@ -148,6 +141,45 @@ const ProductColorWrapper = styled.div`
   }
 `;
 
+const AddToCartButton = styled.button`
+  background-color: rgba(83, 178, 172, 1); /* Direct RGB values */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  .bi-cart2 {
+    margin-right: 8px; /* Adjust icon margin */
+  }
+`;
+
+const DetailsScreenWrapper = styled.div`
+  padding-top: 20px; /* Add padding from above */
+  padding-right: 20px; /* Add padding from the right */
+  padding-left: 20px; /* Add padding from the left */
+`;
+
+const ProductInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Take remaining space */
+`;
+
+const ProductFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px; /* Add margin from above */
+`;
+
+const PriceText = styled.span`
+  font-size: 18px; /* Example font size */
+  font-weight: bold;
+`;
+
 const ProductDetailsScreen = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
@@ -176,30 +208,30 @@ const ProductDetailsScreen = () => {
 
   return (
     <DetailsScreenWrapper>
-      <Title className="prod-title" titleText={product.pName}></Title>
+      <Title className="prod-title" titleText={product.pName} />
       <Breadcrumb items={product.breadcrumbItems} />
       <DetailsContent>
+        
         <ProductPreview previewImages={product.media} />
         <VerticalDivider />
-        <div>
-        <ProductDescriptionTab description={product.desc} />
-        <div>
-          <button className="prod-add-btn">
-            <span className="bi bi-cart2" />
-            <span className="prod-add-btn-text">Add to cart</span>
-          </button>
-          <span className="text-xl text-outerspace font-bold">
-            {currencyFormat(product.price)}
-          </span>
-        </div>
-        </div>
+        <ProductInfo>
+          <b>Description</b>
+          <ProductDescriptionTab description={product.desc} />
+          <ProductFooter>
+            <div>
+              <PriceText>Price: {currencyFormat(product.price)}</PriceText>
+            </div>
+            <AddToCartButton className="prod-add-btn">
+              <span className="bi bi-cart2" />
+              <span className="prod-add-btn-text">Add to cart</span>
+            </AddToCartButton>
+          </ProductFooter>
+        </ProductInfo>
       </DetailsContent>
-      <ProductSimilar>
-        <ProductSimilar products={product.similarProducts} />
-      </ProductSimilar>
+      <ProductSimilar productId={productId} />
+      
     </DetailsScreenWrapper>
   );
-  
 };
 
 export default ProductDetailsScreen;
