@@ -14,7 +14,7 @@ import {
 const router = express.Router();
 const upload = multer({ dest: "uploads/" }); 
 
-router.post("/", verifyJWT, upload.array('media', 10), createProduct); //
+router.post("/NewProduct", verifyJWT, upload.array('media', 10), createProduct); //
 router.put("/:id", verifyJWT, upload.array('newMedia', 10), updateProduct); //
 router.delete("/:id", verifyJWT, deleteProduct);//
 router.get("/user", verifyJWT, getUserProducts);//
