@@ -42,7 +42,7 @@ const SignUpScreen = () => {
     try {
       const response = await axios.post('http://localhost:8000/api/v1/users/register', formData);
       alert(response.data.message);
-      navigate('/login');
+      navigate('/sign_in');
     } catch (error) {
       alert(error.response.data.message);
     }
