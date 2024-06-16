@@ -271,7 +271,7 @@ const ProductDetailsScreen = () => {
             </div>
             <AddToCartButton className="prod-add-btn" onClick={handleAddToCart}>
               <span className="bi bi-cart2" />
-              <span className="prod-add-btn-text">Add to cart</span>
+              <span className="prod-add-btn-text">Chat with seller</span>
             </AddToCartButton>
           </ProductFooter>
         </ProductInfo>
