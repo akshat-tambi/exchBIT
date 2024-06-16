@@ -25,10 +25,10 @@ const UserSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Product'
     }],
-    cart: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Product'
-    }],
+    // cart: [{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Product'
+    // }],
     email: {
         type: String,
         required: [true, "email is required"],
