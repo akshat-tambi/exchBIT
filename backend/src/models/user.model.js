@@ -44,14 +44,14 @@ const UserSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Chat'
     }],
-    outgoingRequests: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Request'
-    }],
-    incomingRequests: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Request'
-    }]
+    // outgoingRequests: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Request'
+    // }],
+    // incomingRequests: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Request'
+    // }]
 }, { timestamps: true });
 
 UserSchema.pre("save", async function (next) {
