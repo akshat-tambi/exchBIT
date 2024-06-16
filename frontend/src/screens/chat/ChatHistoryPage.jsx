@@ -64,7 +64,7 @@ const ChatHistoryPage = () => {
     };
 
     fetchChats();
-  }, [userId]); // Fetch chats when userId changes
+  }, [userId]); 
 
   return (
     <ChatHistoryWrapper>
@@ -77,7 +77,7 @@ const ChatHistoryPage = () => {
             <ChatTile>
               <h3>Chat with {chat.name}</h3>
               <p>Regarding: {chat.productName}</p>
-              {/* Additional details like timestamps or other information can be added here */}
+              
             </ChatTile>
           </Link>
         ))
