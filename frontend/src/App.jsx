@@ -28,7 +28,7 @@ import FilterPage from "./components/product/ProductFilter";
 import ChatPage from "./screens/chat/ChatPage";
 import CreateProduct from "./screens/user/CreateProduct";
 import ProductListUser from "./components/product/ProductListUser";
-
+import ChatHistoryPage from "./screens/chat/ChatHistoryPage";
 
 function App() {
   return (
@@ -55,6 +55,7 @@ function App() {
             <Route path="/product/details/:productId" element={<ProductDetails/>} />
             <Route path="/chat/:chatId" element={<ChatPage/> } />
             <Route path="/userProduct" element={<ProductListUser/>}/>
+            <Route path="/chats" element={< ChatHistoryPage/>}></Route>
           </Route>
 
           {/* auth screens */}

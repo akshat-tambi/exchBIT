@@ -108,6 +108,7 @@ const ChatPage = () => {
         });
 
         const chatData = response.data;
+
         
         setPName(chatData.productName);
         setSenderName(chatData.name);
