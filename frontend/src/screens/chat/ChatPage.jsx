@@ -38,7 +38,7 @@ const ChatMessage = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &::before {
-    content: "${props => props.showSender ? (props.isOwnMessage ? 'You:' : 'Owner:') : ''}";
+    content: "${props => props.showSender ? (props.isOwnMessage ? 'You:' : props.senderName + ':') : ''}";
     position: absolute;
     top: -18px;
     left: 10px;
@@ -81,8 +81,11 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [userId, setUserId] = useState(null); 
+  const [pName, setPName] = useState('');
+  const [senderName, setSenderName] = useState('');
   const ws = useRef(null);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -98,6 +101,22 @@ const ChatPage = () => {
       }
     };
 
+    const fetchChatHistory = async () => {
+      try {
+        const response = await axios.post(`http://localhost:8000/api/v1/chats/${chatId}`, { userId }, {
+          withCredentials: true,
+        });
+
+        const chatData = response.data;
+        
+        setPName(chatData.productName);
+        setSenderName(chatData.name);
+        setMessages(chatData.messages);
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+      }
+    };
+
     const connectWebSocket = () => {
       ws.current = new WebSocket("ws://localhost:8000");
 
@@ -106,6 +125,7 @@ const ChatPage = () => {
         
         if (chatId && userId) {
           ws.current.send(JSON.stringify({ type: 'JOIN_ROOM', chatId }));
+          ws.current.send(JSON.stringify({ type: 'TRIGGER_SAVE' }));
         }
       };
 
@@ -126,15 +146,21 @@ const ChatPage = () => {
       };
     };
 
-    fetchUserId(); 
+    fetchUserId();
     connectWebSocket();
+    
+    setTimeout(() => {
+      if (userId) {
+        fetchChatHistory();
+      }
+    }, 100);
 
     return () => {
       if (ws.current) {
         ws.current.close();
       }
     };
-  }, [chatId, userId]); 
+  }, [chatId, userId]);
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
@@ -147,16 +173,15 @@ const ChatPage = () => {
     }
   };
 
-
   return (
     <ChatPageWrapper>
-      <h2>Chat Room: {chatId}</h2>
+      <h2>Chat with {senderName}, Product: {pName}</h2>
       <ChatMessages>
         {messages.map((msg, index) => {
           const isOwnMessage = msg.from === userId;
           const showSender = index === 0 || messages[index - 1].from !== msg.from;
           return (
-            <ChatMessage key={index} isOwnMessage={isOwnMessage} showSender={showSender}>
+            <ChatMessage key={index} isOwnMessage={isOwnMessage} showSender={showSender} senderName={senderName}>
               <p>{msg.message}</p>
             </ChatMessage>
           );

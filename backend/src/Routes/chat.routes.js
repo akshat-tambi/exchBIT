@@ -5,7 +5,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get('/:chatId', verifyJWT, async (req, res) => {
+router.post('/:chatId', verifyJWT, async (req, res) => {
     const { chatId } = req.params;
     const { userId } = req.body; // i will send in request body as {"userId": "34uhhuhu"}
 

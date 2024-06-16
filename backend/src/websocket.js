@@ -169,6 +169,17 @@ wss.on('connection', async (ws) => {
                 break;
             }
             
+            case 'TRIGGER_SAVE': {
+                try {
+                    await syncRedisToMongo();
+                    ws.send(JSON.stringify({ type: 'SAVE_TRIGGERED', message: 'Redis data synced to MongoDB successfully.' }));
+                } catch (error) {
+                    console.log("Error handling TRIGGER_SAVE:", error);
+                    ws.send(JSON.stringify({ type: 'ERROR', message: 'Error syncing Redis data to MongoDB.' }));
+                }
+                break;
+            }
+
 
             // case 'ACCEPT_REQUEST':
             //     {

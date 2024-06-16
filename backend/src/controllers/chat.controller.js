@@ -29,7 +29,7 @@ export const getChatById = async (chatId, userId) => {
         } else {
             ownerName = owner.username;
         }
-
+        
         return {
             productName: product.pName,
             name: ownerName,
