@@ -152,7 +152,8 @@ const AddToCartButton = styled.button`
   cursor: pointer;
   display: flex;
   align-items: center;
-
+  width: 160px;  
+  height:40px;
   .bi-cart2 {
     margin-right: 8px; /* Adjust icon margin */
   }
@@ -289,13 +290,17 @@ const ProductWishList=async()=>{
             <div>
               <PriceText>Price: {currencyFormat(product.price)}</PriceText>
             </div>
-            <AddToCartButton className="prod-add-btn" onClick={handleAddToCart}>
-              <span className="bi bi-cart2" />
-              <span className="prod-add-btn-text">Chat with seller</span>
+            <div>
+              <AddToCartButton className="prod-add-btn" onClick={handleAddToCart}>
+              <center><span className="bi bi-chat-left-text" >    </span>
+              <span className="prod-add-btn-text">Chat with seller</span></center>
             </AddToCartButton>
-            <AddToWishList className="prod-add-btn" onClick={ProductWishList}>
-                <span className="prod-add-btn-text">Add To WishList</span>
-            </AddToWishList>
+            <br />
+            <AddToCartButton className="prod-add-btn" onClick={ProductWishList}>
+            <center><span className="bi bi-heart" >  </span>
+            <span className="prod-add-btn-text">Add To WishList</span></center>
+            </AddToCartButton>
+            </div>
           </ProductFooter>
         </ProductInfo>
       </DetailsContent>

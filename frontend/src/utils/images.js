@@ -59,8 +59,8 @@ import product24 from "../assets/images/product24.jpg";
 import bigzone1 from "../assets/images/bigzone1.jpg";
 import electronics from "../assets/images/electronics.jpg"
 import scholastic from "../assets/images/scholastic.webp"
-import labCoat from "../assets/images/labCoat.webp"
-import general from "../assets/images/general.jpeg"
+import labCoat from "../assets/images/labCoat.jpg"
+import general from "../assets/images/general.jpg"
 import bigzone2 from "../assets/images/bigzone2.jpg";
 import bigzone3 from "../assets/images/bigzone3.jpg";
 import bigzone4 from "../assets/images/bigzone4.jpg";

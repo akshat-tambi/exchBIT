@@ -175,7 +175,7 @@
 // //           <option value="fashion">Fashion</option>
 // //           <option value="scholastic-gear">Scholastic Gear</option>
 // //           <option value="lab-apparel">Lab Apparel</option>
-// //           <option value="general-essentials">General Essentials</option>
+// //           <option value="general-essentials">Miscellaneous Items</option>
 // //         </Select>
 
 // //         <Button type="submit">Submit</Button>

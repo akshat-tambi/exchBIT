@@ -109,6 +109,30 @@ const LoginUser=asyncHandler(async(req,res)=>{
    .json(new ApiResponse(200,loggedDetail,"logged successfully"))
 });
 
+const RemoveProductWish = asyncHandler(async (req, res) => {
+    const { id } = req.params;  // This is the ID of the product to be removed from the wishlist
+    const userId = req.user._id; // This is the ID of the user making the request
+
+    try {
+        console.clear();
+        console.log("Product ID to remove:", id);
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { wishList: id } }, // Remove the product ID from the wishlist
+            { new: true } // Return the updated user document
+        );
+
+        if (!user) {
+            throw new ApiError(401, 'Error in removing product from wishlist');
+        }
+
+        res.status(200).json(new ApiResponse(200, user, "Removed from wishlist successfully"));
+    } catch (err) {
+        console.error(err);
+        throw new ApiError(401, 'Error in removing product from wishlist');
+    }
+});
+
 const LogoutUser=asyncHandler((req,res)=>{
     const id=req.user._id;
 
@@ -266,5 +290,5 @@ const FindUserById=asyncHandler(async(req,res)=>{
 })
 
 
-export {registerUser,LoginUser,LogoutUser,refreshAccesToken,editUser,WishListFetch,RetrieveUser,SetProductWish,FindUserById}//,ExtractCart}
+export {RemoveProductWish, registerUser,LoginUser,LogoutUser,refreshAccesToken,editUser,WishListFetch,RetrieveUser,SetProductWish,FindUserById}//,ExtractCart}
 

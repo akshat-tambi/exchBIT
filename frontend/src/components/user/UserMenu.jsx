@@ -1,13 +1,14 @@
-import { useState,useEffect } from "react";
-import axios from "axios";
-import { Link, useLocation } from "react-router-dom";
-import styled from "styled-components";
-import Title from "../common/Title";
-import { breakpoints, defaultTheme } from "../../styles/themes/default";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import Title from '../common/Title';
+import { breakpoints, defaultTheme } from '../../styles/themes/default';
+import ProductListUser from '../product/ProductListUser'; // Import ProductListUser component
 
 const NavMenuWrapper = styled.nav`
   margin-top: 32px;
-  
+
   .nav-menu-list {
     row-gap: 8px;
 
@@ -67,48 +68,33 @@ const NavMenuWrapper = styled.nav`
 
 const UserMenu = () => {
   const location = useLocation();
-  const [userDetail,setUser]=useState('');
-  const [UserName,setName]=useState('');
-  const fetchDetail=async()=>{
-     try {
-      const userId=await axios.post(`/api/v1/users/FindUser`,{},{
-        withCredentials:true
-      });
-      console.log(userId.data.data);
-      setUser(userId.data.data);
-     } catch (error) {
+  const [userDetail, setUserDetail] = useState({ username: '' });
+
+  useEffect(() => {
+    const fetchUserDetail = async () => {
+      try {
+        const response = await axios.post(`/api/v1/users/FindUser`, {}, {
+          withCredentials: true,
+        });
+        setUserDetail(response.data.data);
+      } catch (error) {
         console.log(error);
-        alert("there is some error please try again later!!!!");
-     }
-  }
-  useEffect(()=>{  
-  fetchDetail();
-  },[])
+        alert('There is some error, please try again later!');
+      }
+    };
+
+    fetchUserDetail();
+  }, []);
+
   return (
-    
     <div>
       <Title titleText={userDetail.username} />
-      <p className="text-base font-light italic">Welcome to your account.</p>
+      <p className="text-base font-light italic">Welcome to your account</p>
 
       <NavMenuWrapper>
         <ul className="nav-menu-list grid">
           <li className="nav-menu-item">
-            {/* <Link
-              to="/order"
-              className={`nav-menu-link flex items-center ${
-                location.pathname === "/order" ||
-                location.pathname === "/order_detail"
-                  ? "active"
-                  : ""
-              }`}
-            >
-              <span className="nav-link-icon flex items-center justify-center">
-                <img src="./assets/icons/ac_orders.svg" alt="" />
-              </span>
-              <span className="text-base font-semibold nav-link-text no-wrap">
-                My orders
-              </span>
-            </Link> */}
+            {/* Empty list item for possible future use */}
           </li>
           <li className="nav-menu-item">
             <Link
@@ -133,34 +119,17 @@ const UserMenu = () => {
               to="/NewProduct"
               className={`nav-menu-link flex items-center ${
                 location.pathname === "/NewProduct" 
-                
+                  ? "active"
+                  : ""
               }`}
             >
               <span className="nav-link-icon flex items-center justify-center">
                 <img src="./assets/icons/ac_orders.svg" alt="" />
               </span>
               <span className="text-base font-semibold nav-link-text no-wrap">
-                CreateYourProduct
+                Create Ad
               </span>
             </Link>
-          </li>
-          <li className="nav-menu-item">
-            {/* <Link
-              to="/account"
-              className={`nav-menu-link flex items-center ${
-                location.pathname === "/account" ||
-                location.pathname === "/account/add"
-                  ? "active"
-                  : ""
-              }`}
-            >
-              <span className="nav-link-icon flex items-center justify-center">
-                <img src="./assets/icons/ac_user.svg" alt="" />
-              </span>
-              <span className="text-base font-semibold nav-link-text no-wrap">
-                My Account
-              </span>
-            </Link> */}
           </li>
           <li className="nav-menu-item">
             <Link to="/" className={`nav-menu-link flex items-center`}>
@@ -172,8 +141,18 @@ const UserMenu = () => {
               </span>
             </Link>
           </li>
+          
         </ul>
       </NavMenuWrapper>
+
+      {/* Render content based on the active link */}
+      {location.pathname === '/userProduct' && (
+        <div>
+          {/* Your Ads content */}
+          <h2>Your Ads</h2>
+          <ProductListUser />
+        </div>
+      )}
     </div>
   );
 };

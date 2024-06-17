@@ -149,7 +149,7 @@ const CreateProduct = () => {
         <UserDashboardWrapper>
           <UserMenu />
           <UserContent>
-            <Title titleText={"Create New Product"} />
+            <Title titleText={"Post New Ad"} />
             <div className="form-content">
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
@@ -229,7 +229,7 @@ const CreateProduct = () => {
                     <option value="fashion">Fashion</option>
                     <option value="scholastic gear">Scholastic Gear</option>
                     <option value="lab apparel">Lab Apparel</option>
-                    <option value="general essentials">General Essentials</option>
+                    <option value="Miscellaneous Items">Miscellaneous Items</option>
                   </select>
                 </div>
 
