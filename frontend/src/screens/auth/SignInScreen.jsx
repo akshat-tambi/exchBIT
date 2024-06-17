@@ -75,7 +75,7 @@ const SignInScreen = () => {
         <Container>
           <div className="form-grid-content">
             <div className="form-grid-left">
-              <img src={staticImages.form_img1} className="object-fit-cover" alt="" />
+              <img src={staticImages.hostel1} className="object-fit-cover" alt="" />
             </div>
             <div className="form-grid-right">
               <FormTitle>

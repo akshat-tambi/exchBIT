@@ -54,7 +54,7 @@ const SignUpScreen = () => {
         <Container>
           <div className="form-grid-content">
             <div className="form-grid-left">
-              <img src={staticImages.form_img2} className="object-fit-cover" alt="" />
+              <img src={staticImages.hostel2} className="object-fit-cover" alt="" />
             </div>
             <div className="form-grid-right">
               <FormTitle>

@@ -101,19 +101,19 @@ const Sidebar = () => {
           <div className="brand-img-wrap flex items-center justify-center">
             <img className="site-brand-img" src={staticImages.logo} />
           </div>
-          <span className="site-brand-text text-outerspace">achats.</span>
+          <span className="site-brand-text text-outerspace">ExchangeBit</span>
         </SiteBrandWrapper>
         <form className="sidenav-search-form">
-          <InputGroupWrapper className="input-group">
+          {/* <InputGroupWrapper className="input-group">
             <span className="input-icon flex items-center justify-center text-xl text-gray">
               <i className="bi bi-search"></i>
             </span>
-            <Input
+            {/* <Input
               type="text"
               className="input-control w-full"
               placeholder="Search"
-            />
-          </InputGroupWrapper>
+            /> 
+          </InputGroupWrapper> */}
         </form>
         <ul className="sidenav-menu-list grid">
           {sideMenuData?.map((menu) => (

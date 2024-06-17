@@ -1,5 +1,8 @@
 import logo from "../assets/images/logo.png";
 
+import hostel1 from "../assets/images/hostel1.jpg"
+import hostel2 from "../assets/images/hostel2.jpeg"
+
 // forms images
 import form_img1 from "../assets/images/form_img1.png";
 import form_img2 from "../assets/images/form_img2.png";
@@ -54,6 +57,10 @@ import product23 from "../assets/images/product23.jpg";
 import product24 from "../assets/images/product24.jpg";
 
 import bigzone1 from "../assets/images/bigzone1.jpg";
+import electronics from "../assets/images/electronics.jpg"
+import scholastic from "../assets/images/scholastic.webp"
+import labCoat from "../assets/images/labCoat.webp"
+import general from "../assets/images/general.jpeg"
 import bigzone2 from "../assets/images/bigzone2.jpg";
 import bigzone3 from "../assets/images/bigzone3.jpg";
 import bigzone4 from "../assets/images/bigzone4.jpg";
@@ -134,6 +141,11 @@ export const staticImages = {
   form_img4,
   form_img5,
   google,
+  scholastic,
+  labCoat,
+  general,
+  hostel1,
+  hostel2,
   twitter,
   google_play,
   app_store,
@@ -162,6 +174,7 @@ export const staticImages = {
   product13,
   product14,
   product15,
+  electronics,
   product16,
   product17,
   product18,

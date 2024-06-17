@@ -8,7 +8,6 @@ import Title from "../../components/common/Title";
 import { breakpoints, defaultTheme } from "../../styles/themes/default";
 import axios from "axios"; // Import axios for API requests
 
-// Wrapper for the FormScreen
 const FormScreenWrapper = styled.div`
   .form-content {
     margin-top: 40px;
@@ -38,22 +37,22 @@ const FormScreenWrapper = styled.div`
   }
 
   .form-button {
-    display: block; 
-    width: 100%; 
+    display: block;
+    width: 100%;
     padding: 12px;
     margin-top: 20px;
-    background-color: #007bff; 
+    background-color: #007bff;
     color: ${defaultTheme.color_white};
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-    text-align: center; 
-    font-size: 16px; 
+    text-align: center;
+    font-size: 16px;
 
     &:hover {
-      background-color: #0056b3; 
-      transform: translateY(-2px); 
+      background-color: #0056b3;
+      transform: translateY(-2px);
     }
 
     &:disabled {
@@ -70,7 +69,7 @@ const FormScreenWrapper = styled.div`
 
 const breadcrumbItems = [
   { label: "Home", link: "/" },
-  { label: "Form", link: "/form" },
+  { label: "Form", link: "/NewProduct" },
 ];
 
 const CreateProduct = () => {
@@ -79,7 +78,7 @@ const CreateProduct = () => {
     price: "",
     description: "",
     image: null,
-    cat: [], // Adding an array for categories
+    cat: "", // Changed to string for single category selection
   });
 
   const [error, setError] = useState("");
@@ -89,10 +88,6 @@ const CreateProduct = () => {
     const { name, value, files } = e.target;
     if (name === "image") {
       setFormData({ ...formData, image: files[0] });
-    } else if (name === "cat") {
-      // Split the input value by commas and trim whitespace
-      const categories = value.split(",").map((cat) => cat.trim());
-      setFormData({ ...formData, cat: categories });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -105,7 +100,7 @@ const CreateProduct = () => {
 
     const { productName, price, description, image, cat } = formData;
 
-    if (!productName || !price || !description || !image || cat.length === 0) {
+    if (!productName || !price || !description || !image || !cat) {
       setError("All fields are required.");
       setLoading(false);
       return;
@@ -116,17 +111,19 @@ const CreateProduct = () => {
     data.append("price", price);
     data.append("desc", description);
     data.append("media", image);
-    cat.forEach((category, index) => {
-      data.append(`cat[${index}]`, category);
-    });
+    data.append("cat", cat); // Single category selection
 
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/products/NewProduct", data, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/products/NewProduct",
+        data,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       console.log("Product created:", response.data);
 
       setFormData({
@@ -134,8 +131,9 @@ const CreateProduct = () => {
         price: "",
         description: "",
         image: null,
-        cat: [],
+        cat: "", // Reset category after successful submission
       });
+      alert("your product created successfully");
     } catch (error) {
       console.error("Error creating product:", error);
       setError("Failed to create product. Please try again.");
@@ -155,7 +153,9 @@ const CreateProduct = () => {
             <div className="form-content">
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                  <label className="form-label" htmlFor="productName">Product Name</label>
+                  <label className="form-label" htmlFor="productName">
+                    Product Name
+                  </label>
                   <input
                     className="form-input"
                     type="text"
@@ -168,7 +168,9 @@ const CreateProduct = () => {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" htmlFor="price">Price</label>
+                  <label className="form-label" htmlFor="price">
+                    Price
+                  </label>
                   <input
                     className="form-input"
                     type="number"
@@ -181,7 +183,9 @@ const CreateProduct = () => {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" htmlFor="description">Description</label>
+                  <label className="form-label" htmlFor="description">
+                    Description
+                  </label>
                   <textarea
                     className="form-input"
                     id="description"
@@ -194,7 +198,9 @@ const CreateProduct = () => {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" htmlFor="image">Image</label>
+                  <label className="form-label" htmlFor="image">
+                    Image
+                  </label>
                   <input
                     className="form-input"
                     type="file"
@@ -207,20 +213,32 @@ const CreateProduct = () => {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label" htmlFor="cat">Categories (comma-separated)</label>
-                  <input
+                  <label className="form-label" htmlFor="cat">
+                    Category
+                  </label>
+                  <select
                     className="form-input"
-                    type="text"
                     id="cat"
                     name="cat"
-                    value={formData.cat.join(", ")}
+                    value={formData.cat}
                     onChange={handleChange}
-                    placeholder="e.g., Electronics, Gadgets"
                     required
-                  />
+                  >
+                    <option value="">Select a category</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="fashion">Fashion</option>
+                    <option value="scholastic gear">Scholastic Gear</option>
+                    <option value="lab apparel">Lab Apparel</option>
+                    <option value="general essentials">General Essentials</option>
+                  </select>
                 </div>
 
-                <button className="form-button" type="submit" onClick={handleSubmit} disabled={loading}>
+                <button
+                  className="form-button"
+                  type="submit"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                >
                   Submit
                 </button>
 

@@ -39,13 +39,21 @@ const WishListScreen = () => {
   const fetchWishList = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/users/WishList');
+      const response = await axios.get('http://localhost:8000/api/v1/users/WishList',{
+        withCredentials:true,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      console.log("wishdata1",response.data.data);
       // Check if response.data is an array
-      if (Array.isArray(response.data)) {
-        setData(response.data);
+      if (Array.isArray(response.data.data)) {
+        setData(response.data.data);
+        // console.log(data);
       } else {
         setData([]); // Reset to empty array if not an array
       }
+      // setData(response.data)
     } catch (err) {
       setError(err);
     } finally {
@@ -98,11 +106,11 @@ const WishListScreen = () => {
                     </div>
                     <div className="wish-item-info-r flex items-center">
                       <span className="wish-item-price text-xl text-gray font-bold">
-                        {currencyFormat(wishlist.price)}
+                        price: ${wishlist.price}
                       </span>
-                      <BaseLinkBlack to="/cart" className="wish-cart-btn">
+                      {/* <BaseLinkBlack to="/cart" className="wish-cart-btn">
                         Add to cart
-                      </BaseLinkBlack>
+                      </BaseLinkBlack> */}
                     </div>
                   </div>
                 </WishItemWrapper>

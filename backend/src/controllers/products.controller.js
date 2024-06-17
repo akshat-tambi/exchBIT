@@ -2,11 +2,12 @@ import { Product } from "../models/products.model.js";
 import { User } from "../models/user.model.js";
 import { Category } from "../models/categories.model.js";
 import { ApiError } from "../utils/ApiError.js";
+import {ApiResponse} from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/Cloudinary.js";
 import { sendNotification } from "./notification.controller.js"; // Import the notification controller
 
-// Function to extract public ID from Cloudinary URL
+
 function extractPublicId(url) {
   const parts = url.split('/');
   const publicIdWithFormat = parts[parts.length - 1];
@@ -43,8 +44,8 @@ export const createProduct = asyncHandler(async (req, res) => {
       price,
       cat: categoryIds,
       media: mediaUrls,
-      user: userId, // Set the user field to userId
-      status: true,
+      user: userId, 
+      status: false
     });
 
     await product.save();
@@ -79,6 +80,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
     // DeleteMedia is always treated as an array
     const mediaToDelete = Array.isArray(deleteMedia) ? deleteMedia : [deleteMedia];
+    console.log(mediaToDelete);
 
     // Public IDs from deleteMedia URLs and delete files from Cloudinary
     await Promise.all(mediaToDelete.map(async (url) => {
@@ -248,3 +250,13 @@ export const getProductByCategory = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, message: "An error occurred while fetching products by category" });
   }
 });
+
+export const SetStatus = (asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const updatedProduct = await Product.findByIdAndUpdate(id, {
+    status: true 
+  });
+
+  res.status(201).json(new ApiResponse(201, "Product status updated successfully"));
+}));

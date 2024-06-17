@@ -1,3 +1,5 @@
+import { useState,useEffect } from "react";
+import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Title from "../common/Title";
@@ -65,15 +67,33 @@ const NavMenuWrapper = styled.nav`
 
 const UserMenu = () => {
   const location = useLocation();
+  const [userDetail,setUser]=useState('');
+  const [UserName,setName]=useState('');
+  const fetchDetail=async()=>{
+     try {
+      const userId=await axios.post(`http://localhost:8000/api/v1/users/FindUser`,{},{
+        withCredentials:true
+      });
+      console.log(userId.data.data);
+      setUser(userId.data.data);
+     } catch (error) {
+        console.log(error);
+        alert("there is some error please try again later!!!!");
+     }
+  }
+  useEffect(()=>{  
+  fetchDetail();
+  },[])
   return (
+    
     <div>
-      <Title titleText={"Hello Richard"} />
+      <Title titleText={userDetail.username} />
       <p className="text-base font-light italic">Welcome to your account.</p>
 
       <NavMenuWrapper>
         <ul className="nav-menu-list grid">
           <li className="nav-menu-item">
-            <Link
+            {/* <Link
               to="/order"
               className={`nav-menu-link flex items-center ${
                 location.pathname === "/order" ||
@@ -88,7 +108,7 @@ const UserMenu = () => {
               <span className="text-base font-semibold nav-link-text no-wrap">
                 My orders
               </span>
-            </Link>
+            </Link> */}
           </li>
           <li className="nav-menu-item">
             <Link
@@ -125,7 +145,7 @@ const UserMenu = () => {
             </Link>
           </li>
           <li className="nav-menu-item">
-            <Link
+            {/* <Link
               to="/account"
               className={`nav-menu-link flex items-center ${
                 location.pathname === "/account" ||
@@ -140,7 +160,7 @@ const UserMenu = () => {
               <span className="text-base font-semibold nav-link-text no-wrap">
                 My Account
               </span>
-            </Link>
+            </Link> */}
           </li>
           <li className="nav-menu-item">
             <Link to="/" className={`nav-menu-link flex items-center`}>

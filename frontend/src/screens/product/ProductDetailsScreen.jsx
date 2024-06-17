@@ -157,6 +157,16 @@ const AddToCartButton = styled.button`
     margin-right: 8px; /* Adjust icon margin */
   }
 `;
+const AddToWishList=styled.button`
+   background-color: rgba(83, 178, 172, 1); /* Direct RGB values */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+`;
 
 const DetailsScreenWrapper = styled.div`
   padding-top: 20px; /* Add padding from above */
@@ -249,7 +259,17 @@ const ProductDetailsScreen = () => {
     }
 };
 
-
+const ProductWishList=async()=>{
+  try {
+   const MyWishList=await axios.put(`http://localhost:8000/api/v1/users/SetWish/${product._id}`,{},{
+    withCredentials:true
+   });
+   alert("this product is updated to WishList")
+  } catch (error) {
+    console.log("Error in adding product to wishlidt",error);
+    alert("error in adding the product to the wishlist");
+  }
+}
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
@@ -273,6 +293,9 @@ const ProductDetailsScreen = () => {
               <span className="bi bi-cart2" />
               <span className="prod-add-btn-text">Chat with seller</span>
             </AddToCartButton>
+            <AddToWishList className="prod-add-btn" onClick={ProductWishList}>
+                <span className="prod-add-btn-text">Add To WishList</span>
+            </AddToWishList>
           </ProductFooter>
         </ProductInfo>
       </DetailsContent>

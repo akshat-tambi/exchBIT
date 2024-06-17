@@ -177,22 +177,70 @@ const WishListFetch=asyncHandler(async(req,res)=>{
     console.log("user",req.user);
     const userId = req.user._id;
 
-    
-
     if(!userId){
         
         throw new ApiError(501,"id is not fetched");
     }
 
-    const user = await User.findById(userId).populate('wishList');
-    if (!user) {
+    const userWish = await User.findById(userId).populate('wishList');
+    if (!userWish) {
         throw new ApiError(404, "User not found");
     }
-
-    res.status(200).json(new ApiResponse(200, user.wishList, "Wishlist fetched successfully"));
+    console.log("wishdata",userWish.wishList);
+    // alert(userWish.wishList);
+    res.status(201).json(new ApiResponse(201,userWish.wishList));
+    
 
 
 })
+// const SetProductWish=asyncHandler((req,res)=>{
+//     const id=req.params
+//     const userId=req.user
+//     try{
+//     const WishAdded=User.findByIdAndUpdate(userId,{
+//         $addToSet:{wishList:id}
+//     })
+
+//     if(!WishAdded){
+
+//         throw new ApiError(401,"error in setting product in wishList");
+//     }
+//     res.status(201).json("product is set to wishlist successfully");
+//    }catch(err){
+//      console.log(err);
+//      throw new ApiError(401,"Error in seting product in Wishlist");
+//    }
+// }
+// )
+const SetProductWish = asyncHandler(async (req, res) => {
+    const { id } = req.params; 
+    console.log("product id",id);
+    const userId = req.user._id; 
+    console.log("userId",userId);
+  
+    try {
+    //   const FindProduct=await Product.findById(id);
+
+    //   if(FindProduct.user===userId){
+    //     res.status(201).json({message:"this is your product only you cant put it in wishList"})
+    //     return;
+    //   }
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { wishList: id } },
+        { new: true } 
+      );
+  
+      if (!user) {
+        throw new ApiError(401, 'Error in setting product in wishlist');
+      }
+  
+      res.status(201).json(new ApiResponse(201,user,"added to wishList successfully"));
+    } catch (err) {
+      console.error(err);
+      throw new ApiError(401, 'Error in setting product in wishlist');
+    }
+  });
 const RetrieveUser=asyncHandler((req,res)=>{
      const userId=req.user._id;
 
@@ -200,20 +248,23 @@ const RetrieveUser=asyncHandler((req,res)=>{
         new ApiResponse(201,userId)
      )
 })
+const FindUserById=asyncHandler(async(req,res)=>{
+    const userId=req.user._id;
 
-// const ExtractCart=asyncHandler(async(req,res)=>{
-//      const userId=req.user._id;
+    try {
+        const UserData=await User.findById(userId);
+        if(!UserData){
+            throw new ApiError(501,"some error in getting user details");
+        }
+        res.status(201).json(
+            new ApiResponse(201,UserData)
+        )
+    } catch (error) {
+        console.log(error);
+        throw new ApiError(501,"there is some internal server error please try again later");
+    }
+})
 
-//      if(!userId){
-//         throw new ApiError(501,"id is not fetched");
-//     }
 
-//     const cartDetail=await User.findById(userId).populate('cart');
-//     if(!cartDetail){
-//         throw new ApiError(501,"error in retrieving the cart");
-//     }
-//     res.status(200).json(new ApiResponse(200, cartDetail.wishList, "Wishlist fetched successfully"));
-// })
-
-export {registerUser,LoginUser,LogoutUser,refreshAccesToken,editUser,WishListFetch,RetrieveUser}//,ExtractCart}
+export {registerUser,LoginUser,LogoutUser,refreshAccesToken,editUser,WishListFetch,RetrieveUser,SetProductWish,FindUserById}//,ExtractCart}
 

@@ -8,7 +8,8 @@ import {
   getUserProducts,
   getAllProducts,
   getProductById,
-  getProductByCategory
+  getProductByCategory,
+  SetStatus
 } from "../controllers/products.controller.js";
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.delete("/:id", verifyJWT, deleteProduct);//
 router.get("/user", verifyJWT, getUserProducts);//
 router.get("/", getAllProducts);//
 router.get("/:id", getProductById);//
+router.patch("/:id",SetStatus);
 router.get('/category/:categoryName', getProductByCategory); // Route for getting products by category
 
 export default router;

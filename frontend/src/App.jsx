@@ -19,9 +19,10 @@ import ProductDetails from "./screens/product/ProductDetailsScreen";
 import Checkout from "./screens/checkout/CheckoutScreen";
 import Order from "./screens/user/OrderListScreen";
 import OrderDetail from "./screens/user/OrderDetailScreen";
-import WishList from "./screens/user/WishListScreen";
+import WishListScreen from "./screens/user/WishListScreen";
 import WishListEmpty from "./screens/user/WishListEmptyScreen";
 import Confirm from "./screens/user/ConfirmScreen";
+import EditProductForm from "./components/product/EditProductForm";
 import Account from "./screens/user/AccountScreen";
 import Address from "./screens/user/AddressScreen";
 import FilterPage from "./components/product/ProductFilter";
@@ -42,15 +43,16 @@ function App() {
             <Route path="/product" element={<ProductList />} />
             {/* <Route path="/cart" element={<Cart />} /> */}
             {/* <Route path="/empty_cart" element={<CartEmpty />} /> */}
+            <Route path="/EditUserProduct/:editid" element={<EditProductForm/>}/>
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/order" element={<Order />} />
-            <Route path="/order_detail" element={<OrderDetail />} />
-            <Route path="/wishlist" element={<WishList />} />
+            {/* <Route path="/order" element={<Order />} /> */}
+            {/* <Route path="/order_detail" element={<OrderDetail />} /> */}
+            <Route path="/wishlist" element={<WishListScreen />} />
             <Route path="/empty_wishlist" element={<WishListEmpty />} />
             <Route path="/confirm" element={<Confirm />} />
-            <Route path="/account" element={<Account />} />
+            {/* <Route path="/account" element={<Account />} /> */}
             <Route path="/NewProduct" element={<CreateProduct/>} />
-            <Route path="/account/add" element={<Address />} />
+            {/* <Route path="/account/add" element={<Address />} /> */}
             <Route path="/byCategory/:categoryName" element={<FilterPage />} /> 
             <Route path="/product/details/:productId" element={<ProductDetails/>} />
             <Route path="/chat/:chatId" element={<ChatPage/> } />

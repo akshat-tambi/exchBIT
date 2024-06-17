@@ -24,7 +24,7 @@ const AuthHeader = () => {
             <div className="brand-img-wrap flex items-center justify-center">
               <img className="site-brand-img" src={staticImages.logo} alt="" />
             </div>
-            <span className="site-brand-text">achats.</span>
+            <span className="site-brand-text">ExchangeBit</span>
           </SiteBrandWrapper>
           <div className="flex items-center">
             <ButtonGroupWrapper className="flex items-center">

@@ -3,42 +3,42 @@ import { staticImages } from "../utils/images";
 const navMenuData = [
   {
     id: "nav-menu-1",
-    menuLink: "/",
-    menuText: "Shop",
+    menuLink: "/userProduct",
+    menuText: "YourProduct",
   },
   {
     id: "nav-menu-2",
-    menuLink: "/",
-    menuText: "Men",
+    menuLink: "/sign_in",
+    menuText: "SignIn",
   },
   {
     id: "nav-menu-3",
-    menuLink: "/",
-    menuText: "Women",
+    menuLink: "/sign_up",
+    menuText: "SignUp",
   },
-  {
-    id: "nav-menu-4",
-    menuLink: "/",
-    menuText: "Combos",
-  },
-  {
-    id: "nav-menu-5",
-    menuLink: "/",
-    menuText: "Fashion",
-  },
+  // {
+  //   id: "nav-menu-4",
+  //   menuLink: "/",
+  //   menuText: "Combos",
+  // },
+  // {
+  //   id: "nav-menu-5",
+  //   menuLink: "/",
+  //   menuText: "Fashion",
+  // },
 ];
 
 const sideMenuData = [
   {
     id: "side-menu-1",
-    menuLink: "/",
-    menuText: "Home",
+    menuLink: "/userProduct",
+    menuText: "YourProduct",
     iconName: "house",
   },
   {
     id: "side-menu-2",
-    menuLink: "/product",
-    menuText: "Products",
+    menuLink: "/NewProduct",
+    menuText: "CreateNewProduct",
     iconName: "grid-fill",
   },
   {
@@ -47,18 +47,18 @@ const sideMenuData = [
     menuText: "Wishlist",
     iconName: "heart",
   },
-  {
-    id: "side-menu-4",
-    menuLink: "/account",
-    menuText: "My Account",
-    iconName: "person-fill",
-  },
-  {
-    id: "side-menu-5",
-    menuLink: "/cart",
-    menuText: "Cart",
-    iconName: "bag-check-fill",
-  },
+  // {
+  //   id: "side-menu-4",
+  //   menuLink: "/account",
+  //   menuText: "My Account",
+  //   iconName: "person-fill",
+  // },
+  // {
+  //   id: "side-menu-5",
+  //   menuLink: "/cart",
+  //   menuText: "Cart",
+  //   iconName: "bag-check-fill",
+  // },
 ];
 
 const bannerData = [
@@ -162,9 +162,9 @@ const newArrivalData = [
 const CategoriesData = [
   {
     id: "saving-z-1",
-    imgSource: staticImages.bigzone1,
+    imgSource: staticImages.electronics,
     title: "Electronics",
-    description: "Dress up in summer vibe",
+    description: "Buy electronics appliances in college",
     discount: 50,
     isLimited: false,
   },
@@ -178,25 +178,25 @@ const CategoriesData = [
   },
   {
     id: "saving-z-3",
-    imgSource: staticImages.bigzone3,
+    imgSource: staticImages.scholastic,
     title: "Scholastic Gear",
-    description: "Move with style & comfort",
+    description: "Buy All the necessary items",
     discount: 50,
     isLimited: false,
   },
   {
     id: "saving-z-4",
-    imgSource: staticImages.bigzone4,
+    imgSource: staticImages.labCoat,
     title: "Lab Apparel",
-    description: "Live In Confort",
+    description: "LabCoat For Important Labs",
     discount: 20,
     isLimited: false,
   },
   {
     id: "saving-z-5",
-    imgSource: staticImages.bigzone5,
+    imgSource: staticImages.general,
     title: "General Essentials",
-    description: "Street Style Icon",
+    description: "General Essentials items for Hostel Life",
     discount: 60,
     isLimited: false,
   },

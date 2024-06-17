@@ -140,7 +140,7 @@ const Header = () => {
                   alt="site logo"
                 />
               </div>
-              <span className="site-brand-text text-outerspace">achats.</span>
+              <span className="site-brand-text text-outerspace">ExchangeBit</span>
             </SiteBrandWrapper>
           </div>
           <NavigationAndSearchWrapper className="flex items-center">
@@ -160,7 +160,7 @@ const Header = () => {
                 })}
               </ul>
             </NavigationMenuWrapper>
-            <form className="search-form">
+            {/* <form className="search-form">
               <InputGroupWrapper className="input-group">
                 <span className="input-icon flex items-center justify-center text-xl text-gray">
                   <i className="bi bi-search"></i>
@@ -171,7 +171,7 @@ const Header = () => {
                   placeholder="Search"
                 />
               </InputGroupWrapper>
-            </form>
+            </form> */}
           </NavigationAndSearchWrapper>
 
           <IconLinksWrapper className="flex items-center">
@@ -184,24 +184,25 @@ const Header = () => {
               <img src={staticImages.heart} alt="" />
             </Link>
             <Link
-              to="/account"
-              className={`icon-link ${
-                location.pathname === "/account" ||
-                location.pathname === "/account/add"
-                  ? "active"
-                  : ""
-              } inline-flex items-center justify-center`}
+              to="/NewProduct"
+              // className={`icon-link ${
+              //   location.pathname === "/account" ||
+              //   location.pathname === "/account/add"
+              //     ? "active"
+              //     : ""
+              // } inline-flex items-center justify-center`}
+              className={`icon-link inline-flex items-center justify-center`}
             >
               <img src={staticImages.user} alt="" />
             </Link>
-            <Link
+            {/* <Link
               to="/cart"
               className={`icon-link ${
                 location.pathname === "/cart" ? "active" : ""
               } inline-flex items-center justify-center`}
             >
               <img src={staticImages.cart} alt="" />
-            </Link>
+            </Link> */}
           </IconLinksWrapper>
         </div>
       </Container>
