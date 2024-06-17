@@ -290,7 +290,7 @@ const EditProductForm = () => {
   useEffect(() => {
     const fetchProductById = async () => {
       try {
-        const productResponse = await axios.get(`http://localhost:8000/api/v1/products/${editid}`);
+        const productResponse = await axios.get(`/api/v1/products/${editid}`);
         console.log(productResponse)
         const product = productResponse.data.product;
         console.log("productUser",product);
@@ -331,7 +331,7 @@ const EditProductForm = () => {
 
     try {
       
-      const response = await axios.put(`http://localhost:8000/api/v1/products/${editid}`, formData, {
+      const response = await axios.put(`/api/v1/products/${editid}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },

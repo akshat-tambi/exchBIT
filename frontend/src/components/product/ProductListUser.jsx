@@ -26,7 +26,7 @@ const ProductListUser = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const productsData = await axios.get("http://localhost:8000/api/v1/products/user",{
+        const productsData = await axios.get("/api/v1/products/user",{
             withCredentials:true
         });
         console.log(productsData.products)

@@ -57,7 +57,7 @@ const SignInScreen = () => {
     e.preventDefault();
     try {
         console.log(formData);
-        const response = await axios.post('http://localhost:8000/api/v1/users/logging', formData, {
+        const response = await axios.post('/api/v1/users/logging', formData, {
             withCredentials: true, // Ensure cookies are sent with the request
         });
 

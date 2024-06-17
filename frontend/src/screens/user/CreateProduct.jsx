@@ -115,7 +115,7 @@ const CreateProduct = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/products/NewProduct",
+        "/api/v1/products/NewProduct",
         data,
         {
           withCredentials: true,

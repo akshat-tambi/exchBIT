@@ -39,7 +39,7 @@ const WishListScreen = () => {
   const fetchWishList = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/v1/users/WishList',{
+      const response = await axios.get('/api/v1/users/WishList',{
         withCredentials:true,
         headers: {
           'Accept': 'application/json',

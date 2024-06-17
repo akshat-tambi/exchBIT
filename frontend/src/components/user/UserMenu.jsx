@@ -71,7 +71,7 @@ const UserMenu = () => {
   const [UserName,setName]=useState('');
   const fetchDetail=async()=>{
      try {
-      const userId=await axios.post(`http://localhost:8000/api/v1/users/FindUser`,{},{
+      const userId=await axios.post(`/api/v1/users/FindUser`,{},{
         withCredentials:true
       });
       console.log(userId.data.data);
