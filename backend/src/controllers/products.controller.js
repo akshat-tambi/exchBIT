@@ -2,11 +2,10 @@ import { Product } from "../models/products.model.js";
 import { User } from "../models/user.model.js";
 import { Category } from "../models/categories.model.js";
 import { ApiError } from "../utils/ApiError.js";
-import {ApiResponse} from "../utils/ApiResponse.js"
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/Cloudinary.js";
-import { sendNotification } from "./notification.controller.js"; // Import the notification controller
-
+import { sendNotification } from "./notification.controller.js";
 
 function extractPublicId(url) {
   const parts = url.split('/');
@@ -14,20 +13,18 @@ function extractPublicId(url) {
   const publicIdParts = publicIdWithFormat.split('.');
   return publicIdParts[0];
 }
+
 export const createProduct = asyncHandler(async (req, res) => {
   const { pName, desc, price, cat } = req.body;
   const userId = req.user._id;
   const files = req.files;
 
   try {
-    // Ensure cat -> array
     const categories = Array.isArray(cat) ? cat : [cat];
 
-    // Upload to Cloudinary
     const uploadedMedia = await Promise.all(files.map(file => uploadOnCloudinary(file.path)));
     const mediaUrls = uploadedMedia.map(file => file.secure_url);
 
-    // Find or create categories and get their IDs
     const categoryIds = await Promise.all(categories.map(async (categoryName) => {
       let category = await Category.findOne({ prodType: categoryName });
       if (!category) {
@@ -37,23 +34,20 @@ export const createProduct = asyncHandler(async (req, res) => {
       return category._id;
     }));
 
-    // Create new product
     const product = new Product({
       pName,
       desc,
       price,
       cat: categoryIds,
       media: mediaUrls,
-      user: userId, 
+      user: userId,
       status: false
     });
 
     await product.save();
 
-    // Update user's productsOwned
     await User.findByIdAndUpdate(userId, { $push: { productsOwned: product._id } });
 
-    // Update the prodList array 
     await Promise.all(categoryIds.map(async (categoryId) => {
       await Category.findByIdAndUpdate(categoryId, { $addToSet: { prodList: product._id } });
     }));
@@ -75,30 +69,23 @@ export const updateProduct = asyncHandler(async (req, res) => {
     const product = await Product.findById(id);
     if (!product) throw new ApiError(404, "Product not found");
 
-    // Set the user field to userId
     product.user = userId;
 
-    // DeleteMedia is always treated as an array
     const mediaToDelete = Array.isArray(deleteMedia) ? deleteMedia : [deleteMedia];
     console.log(mediaToDelete);
 
-    // Public IDs from deleteMedia URLs and delete files from Cloudinary
     await Promise.all(mediaToDelete.map(async (url) => {
       const publicId = extractPublicId(url);
-      const isRaw = !/\.\w+$/.test(url); // If the URL contains an extension (means not raw)
+      const isRaw = !/\.\w+$/.test(url);
       await deleteFromCloudinary(publicId, isRaw);
-      // Remove from product's media array
       product.media = product.media.filter(mediaUrl => mediaUrl !== url);
     }));
 
-    // Cat is always sent as an array
     const categories = Array.isArray(cat) ? cat : [cat];
 
-    // New media files to Cloudinary
     const uploadedMedia = await Promise.all(newFiles.map(file => uploadOnCloudinary(file.path)));
     const mediaUrls = uploadedMedia.map(file => file.secure_url);
 
-    // Find or create categories and get their IDs
     const categoryIds = await Promise.all(categories.map(async (categoryName) => {
       let category = await Category.findOne({ prodType: categoryName });
       if (!category) {
@@ -108,10 +95,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       return category._id;
     }));
 
-    // Update product media with the new files
     product.media = [...product.media, ...mediaUrls];
-
-    // Update product details
     product.pName = pName || product.pName;
     product.desc = desc || product.desc;
     product.price = price || product.price;
@@ -119,17 +103,14 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
     await product.save();
 
-    // User's productsOwned 
     if (!req.user.productsOwned.includes(product._id)) {
       await User.findByIdAndUpdate(userId, { $push: { productsOwned: product._id } });
     }
 
-    // ProdList array 
     await Promise.all(categoryIds.map(async (categoryId) => {
       await Category.findByIdAndUpdate(categoryId, { $addToSet: { prodList: product._id } });
     }));
 
-    // Remove product ID from prodList 
     const oldCategories = await Category.find({ _id: { $nin: categoryIds } });
     await Promise.all(oldCategories.map(async (oldCategory) => {
       await Category.findByIdAndUpdate(oldCategory._id, { $pull: { prodList: product._id } });
@@ -152,41 +133,33 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(id);
   if (!product) throw new ApiError(404, "Product not found");
 
-  // Delete product media from Cloudinary
   await Promise.all(product.media.map(async (url) => {
     const publicId = extractPublicId(url);
-    const isRaw = !/\.\w+$/.test(url); 
+    const isRaw = !/\.\w+$/.test(url);
     await deleteFromCloudinary(publicId, isRaw);
     product.media = product.media.filter(mediaUrl => mediaUrl !== url);
   }));
 
-  // Delete product from database
   await Product.findByIdAndDelete(id);
 
-  // Update user's productsOwned
   await User.findByIdAndUpdate(userId, {
     $pull: { productsOwned: product._id }
   });
 
-  // Update category's prodList
   await Category.findByIdAndUpdate(product.cat, {
     $pull: { prodList: product._id }
   });
 
-  // Remove product from user's wishlist and cart
   const usersToUpdate = await User.find({ $or: [{ cart: product._id }, { wishList: product._id }] });
-  console.log("Users to update:", usersToUpdate); // Log usersToUpdate
+  console.log("Users to update:", usersToUpdate);
 
   await Promise.all(usersToUpdate.map(async (user) => {
-    // Remove product from cart
     user.cart = user.cart.filter(cartItem => cartItem.toString() !== product._id.toString());
-    // Remove product from wishlist
     user.wishList = user.wishList.filter(wishlistItem => wishlistItem.toString() !== product._id.toString());
     await user.save();
-    console.log("Updated user:", user); // Log updated user
+    console.log("Updated user:", user);
   }));
 
-  // Send notification to users who have this product in their cart or wishlist
   const notificationMessage = `Product ${product.pName} has been deleted.`;
   await Promise.all(usersToUpdate.map(async (user) => {
     await sendNotification(user._id, notificationMessage);
@@ -211,7 +184,7 @@ export const getUserProducts = asyncHandler(async (req, res) => {
 
 export const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+    const products = await Product.find({ status: { $ne: true } }).sort({ createdAt: -1 });
     res.status(200).json({ success: true, products });
   } catch (error) {
     console.error(error);
@@ -223,7 +196,7 @@ export const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   try {
-    const product = await Product.findById(id);
+    const product = await Product.findOne({ _id: id, status: { $ne: true } });
     if (!product) throw new ApiError(404, "Product not found");
     
     res.status(200).json({ success: true, product });
@@ -237,11 +210,12 @@ export const getProductByCategory = asyncHandler(async (req, res) => {
   const { categoryName } = req.params;
 
   try {
-    // Find category by prodType
-    const category = await Category.findOne({ prodType: categoryName }).populate('prodList');
+    const category = await Category.findOne({ prodType: categoryName }).populate({
+      path: 'prodList',
+      match: { status: { $ne: true } }
+    });
     if (!category) throw new ApiError(404, "Category not found");
 
-    // Extract products from category
     const products = category.prodList;
 
     res.status(200).json({ success: true, products });
@@ -251,7 +225,7 @@ export const getProductByCategory = asyncHandler(async (req, res) => {
   }
 });
 
-export const SetStatus = (asyncHandler(async (req, res) => {
+export const SetStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const updatedProduct = await Product.findByIdAndUpdate(id, {
@@ -259,4 +233,4 @@ export const SetStatus = (asyncHandler(async (req, res) => {
   });
 
   res.status(201).json(new ApiResponse(201, "Product status updated successfully"));
-}));
+});
