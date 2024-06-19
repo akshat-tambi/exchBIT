@@ -14,14 +14,40 @@ export const GlobalStyles = createGlobalStyle`
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
         -webkit-text-size-adjust: 100%;
+        height: 100%;
     }
-    body{
+
+    body {
         min-height: 100vh;
         font-size: 14px;
         font-weight: 400;
         line-height: 1.6;
         font-family: ${defaultTheme.font_family_inter};
         color: ${defaultTheme.color_jet};
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #root {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .content-wrap {
+        flex: 1;
+    }
+
+    footer {
+        flex-shrink: 0;
     }
 
     // common reset
@@ -39,7 +65,7 @@ export const GlobalStyles = createGlobalStyle`
         background-color: transparent;
         transition: ${defaultTheme.default_transition};
     }
-    
+
     /* flexbox and grid */
     .flex {
         display: flex;
@@ -68,7 +94,7 @@ export const GlobalStyles = createGlobalStyle`
         &-stretch {
             align-items: stretch;
         }
-        &-baseline{
+        &-baseline {
             align-items: baseline;
         }
     }
@@ -99,6 +125,7 @@ export const GlobalStyles = createGlobalStyle`
         display: block;
         object-position: top;
     }
+
     .no-wrap {
         white-space: nowrap;
     }
@@ -111,6 +138,7 @@ export const GlobalStyles = createGlobalStyle`
     .w-full {
         width: 100%;
     }
+
     // font weights
     .font-light {
         font-weight: 300;
@@ -203,7 +231,7 @@ export const GlobalStyles = createGlobalStyle`
     .bg-outerspace {
         background-color: ${defaultTheme.color_outerspace};
     }
-    .bg-silver{
+    .bg-silver {
         background-color: ${defaultTheme.color_silver};
     }
 
@@ -250,16 +278,16 @@ export const GlobalStyles = createGlobalStyle`
     .text-3xl {
         font-size: 20px;
     }
-    .text-4xl{
+    .text-4xl {
         font-size: 24px;
     }
 
-    .title-sm{
+    .title-sm {
         font-size: 20px;
         margin-bottom: 16px;
     }
 
-    @media screen and (max-width: 575.98px){
+    @media screen and (max-width: 575.98px) {
         .text-xs {
             font-size: 11px !important;
         }
@@ -281,7 +309,7 @@ export const GlobalStyles = createGlobalStyle`
         .text-3xl {
             font-size: 19px !important;
         }
-        .text-4xl{
+        .text-4xl {
             font-size: 22px!important;
         }
     }
@@ -308,7 +336,7 @@ export const GlobalStyles = createGlobalStyle`
         .text-3xl {
             font-size: 18px !important;
         }
-        .text-4xl{
+        .text-4xl {
             font-size: 20px!important;
         }
     }

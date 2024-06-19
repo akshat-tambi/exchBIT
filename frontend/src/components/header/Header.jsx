@@ -140,7 +140,7 @@ const Header = () => {
                   alt="site logo"
                 />
               </div>
-              <span className="site-brand-text text-outerspace">ExchangeBit</span>
+              <span className="site-brand-text text-outerspace">exchBIT</span>
             </SiteBrandWrapper>
           </div>
           <NavigationAndSearchWrapper className="flex items-center">

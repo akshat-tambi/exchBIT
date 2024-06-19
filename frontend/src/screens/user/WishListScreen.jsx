@@ -6,6 +6,7 @@ import Breadcrumb from "../../components/common/Breadcrumb";
 import { UserContent, UserDashboardWrapper } from "../../styles/user";
 import UserMenu from "../../components/user/UserMenu";
 import Title from "../../components/common/Title";
+import { Link } from "react-router-dom";
 
 // Define the main wrapper for the wishlist screen
 const WishListScreenWrapper = styled.main`
@@ -199,18 +200,37 @@ const WishListScreen = () => {
                         <i className="bi bi-x-lg"></i>
                       </button>
                       <div className="wish-item-img-wrapper">
-                        <img
-                          src={wishlist.media[0]}
-                          className="object-fit-cover"
-                          alt=""
-                        />
+                        {console.log(wishlist.status)}
+                        {wishlist.status !== "true" ? (
+                          <Link to={`/product/details/${wishlist._id}`}>
+                            <img
+                              src={wishlist.media[0]}
+                              className="object-fit-cover"
+                              alt={wishlist.pName}
+                            />
+                          </Link>
+                        ) : (
+                          <img
+                            src={wishlist.media[0]}
+                            className="object-fit-cover"
+                            alt={wishlist.pName}
+                          />
+                        )}
                       </div>
                     </div>
                     <div className="wish-item-info flex justify-between">
                       <div className="wish-item-info-l flex flex-col">
-                        <p className="wish-item-title text-xl font-bold text-outerspace">
-                          {wishlist.pName}
-                        </p>
+                        {wishlist.status !== "true" ? (
+                          <Link to={`/product/details/${wishlist._id}`}>
+                            <p className="wish-item-title text-xl font-bold text-outerspace">
+                              {wishlist.pName}
+                            </p>
+                          </Link>
+                        ) : (
+                          <p className="wish-item-title text-xl font-bold text-outerspace">
+                            {wishlist.pName}
+                          </p>
+                        )}
                         <ul className="flex flex-col">
                           <li>
                             <span className="text-lg font-bold">Description:</span>
@@ -221,7 +241,7 @@ const WishListScreen = () => {
                           <li>
                             <span className="text-lg font-bold">Status:</span>
                             <span className="text-lg text-gray font-medium capitalize">
-                              {wishlist.status ? "Available" : "Unavailable"}
+                              {wishlist.status ? "Unavailable" : "Available"}
                             </span>
                           </li>
                         </ul>
