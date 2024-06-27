@@ -4,8 +4,6 @@ import axios from 'axios';
 import { breakpoints } from '../../styles/themes/default';
 import ProductItemUser from './ProductItemUser';
 
-const lightLineColor = '83, 178, 172';
-
 const ProductListWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -13,7 +11,7 @@ const ProductListWrapper = styled.div`
   margin-top: 20px;
   padding: 20px;
   border-radius: 8px;
-  background-color: #f0f0f0;
+  
   
   
   @media (max-width: ${breakpoints.sm}) {

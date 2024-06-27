@@ -78,62 +78,75 @@ const Button = styled.button`
   }
 `;
 
+const MediaContainer = styled.div`
+  margin-bottom: 15px;
+`;
+
+const MediaItem = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+`;
+
+const MediaLink = styled.a`
+  margin-right: 10px;
+`;
+
+
 const EditProductForm = () => {
   const { editid } = useParams();
 
-  
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [image, setImage] = useState(null);
   const [category, setCategory] = useState('');
-  const [deleteImage,setDelete]=useState('');
+  const [deleteMedia, setDeleteMedia] = useState('');
+  const [uploadedMedia, setUploadedMedia] = useState([]);
 
-  
   useEffect(() => {
     const fetchProductById = async () => {
       try {
         const productResponse = await axios.get(`/api/v1/products/${editid}`);
-        console.log(productResponse)
         const product = productResponse.data.product;
-        console.log("productUser",product);
 
-        
         setProductName(product.pName);
         setDescription(product.desc);
         setPrice(product.price);
-        
-        setCategory(product.cat);
-        setDelete(product.media);
-        console.log("del",product.media);
-        console.log("image",deleteImage);
+        setCategory(product.cat[0]); 
 
-        
+        setUploadedMedia(product.media.map((url, index) => ({
+          url,
+          id: index 
+        })));
       } catch (error) {
-        console.error('Error fetching ad details!');
+        console.error('Error fetching product details!', error);
       }
     };
 
     fetchProductById();
-  }, [editid]); 
+  }, [editid]);
 
-  
+  const handleMediaDelete = (id) => {
+    const updatedMedia = uploadedMedia.filter(media => media.id !== id);
+    setUploadedMedia(updatedMedia);
+    setDeleteMedia([...deleteMedia, uploadedMedia.find(media => media.id === id).url]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
     const formData = new FormData();
     formData.append('pName', productName);
     formData.append('desc', description);
     formData.append('price', price);
     formData.append('cat', category);
-    formData.append('deleteMedia',deleteImage);
+    formData.append('deleteMedia', deleteMedia);
     if (image) {
       formData.append('newMedia', image);
     }
 
     try {
-      
       const response = await axios.put(`/api/v1/products/${editid}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -141,19 +154,18 @@ const EditProductForm = () => {
         withCredentials: true
       });
 
-    
+      // Clear form fields
       setProductName('');
       setDescription('');
       setPrice('');
       setImage(null);
       setCategory('');
 
-    
-      // console.log('Edit Response:', response.data);
+      // Show success message
       alert('Product updated successfully!');
     } catch (error) {
-      console.error('Error updating ad!');
-      alert('Failed to update ad. Please try again later!');
+      console.error('Error updating product!', error);
+      alert('Failed to update product. Please try again later!');
     }
   };
 
@@ -179,7 +191,7 @@ const EditProductForm = () => {
           required
         />
 
-        <Label htmlFor="price">Price ($):</Label>
+        <Label htmlFor="price">Price (₹):</Label>
         <Input
           type="number"
           id="price"
@@ -188,12 +200,29 @@ const EditProductForm = () => {
           required
         />
 
-        <Label htmlFor="image">Image:</Label>
+        {uploadedMedia.length > 0 && (
+          <MediaContainer>
+            <Label>Uploaded Media:</Label>
+            {uploadedMedia.map(media => (
+              <MediaItem key={media.id}>
+                <MediaLink href={media.url} target="_blank" rel="noopener noreferrer">
+                  {`file ${media.id+1}`}
+                </MediaLink>
+                <span>
+                <Button type="button" onClick={() => handleMediaDelete(media.id)}>
+                  Delete
+                </Button>
+                </span>
+              </MediaItem>
+            ))}
+          </MediaContainer>
+        )}
+
+        <Label htmlFor="image">New Image:</Label>
         <Input
           type="file"
           id="image"
           onChange={(e) => setImage(e.target.files[0])}
-          required
         />
 
         <Label htmlFor="category">Category:</Label>
@@ -217,4 +246,3 @@ const EditProductForm = () => {
 };
 
 export default EditProductForm;
-

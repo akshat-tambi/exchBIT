@@ -132,9 +132,9 @@ const ProductItemUser = ({ product }) => {
       <Link to={`/product/details/${product._id}`}>
         <ProductImage src={firstMedia} alt={product.pName} />
       </Link>
-      <WishlistButton type="button" onClick={ProductWishList}>
+      {/* <WishlistButton type="button" onClick={ProductWishList}>
         <i className="bi bi-heart"></i>
-      </WishlistButton>
+      </WishlistButton> */}
       <ProductInfo>
         <p className="font-bold">{product.pName}</p>
         <div className="flex items-center justify-between text-sm font-medium">

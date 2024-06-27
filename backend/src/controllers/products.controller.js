@@ -72,14 +72,16 @@ export const updateProduct = asyncHandler(async (req, res) => {
     product.user = userId;
 
     const mediaToDelete = Array.isArray(deleteMedia) ? deleteMedia : [deleteMedia];
-    console.log(mediaToDelete);
 
-    await Promise.all(mediaToDelete.map(async (url) => {
-      const publicId = extractPublicId(url);
-      const isRaw = !/\.\w+$/.test(url);
-      await deleteFromCloudinary(publicId, isRaw);
-      product.media = product.media.filter(mediaUrl => mediaUrl !== url);
-    }));
+    if(deleteMedia.length) 
+    {
+      await Promise.all(mediaToDelete.map(async (url) => {
+        const publicId = extractPublicId(url);
+        const isRaw = !/\.\w+$/.test(url);
+        await deleteFromCloudinary(publicId, isRaw);
+        product.media = product.media.filter(mediaUrl => mediaUrl !== url);
+      }));
+    }
 
     const categories = Array.isArray(cat) ? cat : [cat];
 
