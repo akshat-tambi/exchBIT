@@ -95,9 +95,6 @@ const ProductDescriptionMedia = () => {
       >
         <img src={staticImages.play_icon} alt="play icon" />
       </button>
-      <h4 className="media-title text-white text-xl font-medium text-center">
-        Raven Hoodie with black colored design
-      </h4>
     </DescriptionMediaWrapper>
   );
 };

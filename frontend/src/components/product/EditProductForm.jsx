@@ -110,7 +110,7 @@ const EditProductForm = () => {
 
         
       } catch (error) {
-        console.error('Error fetching product details:', error);
+        console.error('Error fetching ad details!');
       }
     };
 
@@ -149,11 +149,11 @@ const EditProductForm = () => {
       setCategory('');
 
     
-      console.log('Edit Response:', response.data);
+      // console.log('Edit Response:', response.data);
       alert('Product updated successfully!');
     } catch (error) {
-      console.error('Error updating product:', error);
-      alert('Failed to update product. Please try again.');
+      console.error('Error updating ad!');
+      alert('Failed to update ad. Please try again later!');
     }
   };
 

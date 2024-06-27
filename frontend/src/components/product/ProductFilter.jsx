@@ -89,10 +89,10 @@ const FilterPage = () => {
         setProducts(response.products);
         setFilteredProducts(response.products); // Initialize filteredProducts with all products
       } else {
-        console.error('Failed to fetch products by category:', response.message);
+        console.error('Failed to fetch ads by category:', response.message);
       }
     } catch (error) {
-      console.error('Error fetching products by category:', error);
+      console.error('Error fetching ads by category!');
     }
   };
 
@@ -106,13 +106,10 @@ const FilterPage = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Apply filters
     let filtered = products.filter(product => {
-      // Filter by product name
       if (filters.productName && !product.pName.toLowerCase().includes(filters.productName.toLowerCase())) {
         return false;
       }
-      // Filter by price range
       if (filters.minPrice && parseFloat(product.price) < parseFloat(filters.minPrice)) {
         return false;
       }

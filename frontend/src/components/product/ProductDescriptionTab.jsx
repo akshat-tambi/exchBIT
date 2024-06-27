@@ -10,16 +10,16 @@ const DetailsContent = styled.div`
 `;
 
 const DescriptionBox = styled.div`
-  background-color: #f2f2f2; /* Slightly darker color */
+  background-color: #f2f2f2; 
   padding: 20px;
   border-radius: 8px;
-  height: 270px; /* Fixed height */
-  overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+  height: 270px; 
+  overflow-y: auto; 
 `;
 
 const DescriptionText = styled.p`
-  margin-top: 0; /* Remove default margin */
-  margin-bottom: 12px; /* Adjust margin as needed */
+  margin-top: 0; 
+  margin-bottom: 12px; 
 `;
 
 const ProductDescriptionTab = ({ description }) => {
@@ -29,7 +29,6 @@ const ProductDescriptionTab = ({ description }) => {
         <DescriptionBox>
           <DescriptionText>{description}</DescriptionText>
         </DescriptionBox>
-        {/* Additional content or specifications can be added here */}
       </DetailsContent>
     </>
   );

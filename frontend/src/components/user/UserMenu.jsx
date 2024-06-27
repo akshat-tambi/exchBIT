@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Title from '../common/Title';
 import { breakpoints, defaultTheme } from '../../styles/themes/default';
-import ProductListUser from '../product/ProductListUser'; // Import ProductListUser component
+import ProductListUser from '../product/ProductListUser';
 
 const NavMenuWrapper = styled.nav`
   margin-top: 32px;
@@ -79,7 +79,7 @@ const UserMenu = () => {
         setUserDetail(response.data.data);
       } catch (error) {
         console.log(error);
-        alert('There is some error, please try again later!');
+        alert('Please try again later!');
       }
     };
 
@@ -94,7 +94,6 @@ const UserMenu = () => {
       <NavMenuWrapper>
         <ul className="nav-menu-list grid">
           <li className="nav-menu-item">
-            {/* Empty list item for possible future use */}
           </li>
           <li className="nav-menu-item">
             <Link
@@ -145,10 +144,8 @@ const UserMenu = () => {
         </ul>
       </NavMenuWrapper>
 
-      {/* Render content based on the active link */}
       {location.pathname === '/userProduct' && (
         <div>
-          {/* Your Ads content */}
           <h2>Your Ads</h2>
           <ProductListUser />
         </div>

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { breakpoints, defaultTheme } from "../../styles/themes/default";
 
-const lightLineColor = "83, 178, 172"; // RGB values for the light line color
+const lightLineColor = "83, 178, 172"; 
 
 const ProductPreviewWrapper = styled.div`
   display: grid;
@@ -50,7 +50,7 @@ const PreviewItemWrapper = styled.div`
 
   &:hover {
     .preview-item {
-      border: 1px solid rgba(${lightLineColor}, 0.7); /* Light line outline on hover */
+      border: 1px solid rgba(${lightLineColor}, 0.7); 
     }
   }
 
@@ -59,11 +59,11 @@ const PreviewItemWrapper = styled.div`
     height: 100%;
     object-fit: cover;
     border-radius: 8px;
-    border: 1px solid transparent; /* Initially no border */
+    border: 1px solid transparent; 
     transition: border-color ${defaultTheme.default_transition};
 
     @media (hover: none) {
-      border: 1px solid transparent; /* No border on devices that don't support hover */
+      border: 1px solid transparent; 
     }
   }
 `;
@@ -73,7 +73,7 @@ const PreviewDisplay = styled.div`
   height: auto;
   overflow: hidden;
   border-radius: 8px;
-  border: 1px solid rgba(${lightLineColor}, 0.3); /* Thin light line outline */
+  border: 1px solid rgba(${lightLineColor}, 0.3); 
   transition: border-color ${defaultTheme.default_transition};
   display: flex;
   justify-content: center;
@@ -83,8 +83,8 @@ const PreviewDisplay = styled.div`
     max-width: 100%;
     height: auto;
     object-fit: cover;
-    border-radius: 8px; /* Rounded corners for larger preview */
-    border: 1px solid transparent; /* Initially no border */
+    border-radius: 8px; 
+    border: 1px solid transparent; 
     transition: border-color ${defaultTheme.default_transition};
   }
 

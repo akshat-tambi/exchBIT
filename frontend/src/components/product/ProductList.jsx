@@ -1,5 +1,3 @@
-// src/components/product/ProductList.js
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { breakpoints } from '../../styles/themes/default';
@@ -28,15 +26,15 @@ const ProductList = () => {
         setProducts(productsData.data);
         setProducts(productsData);
       } catch (error) {
-        console.error('Error fetching products:', error.message);
-        setError('Failed to fetch products. Please try again later.'); // Set error state
+        console.error('Error fetching ads:', error.message);
+        setError('Failed to fetch ads. Please try again later!'); // Set error state
       }
     };
     fetchProducts(); 
   }, []);
 
   if (error) {
-    return <p>{error}</p>; // Render error message
+    return <p>{error}</p>; 
   }
 
   return (

@@ -1,4 +1,3 @@
-// src/components/product/ProductItem.js
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -9,13 +8,13 @@ import { breakpoints, defaultTheme } from '../../styles/themes/default';
 
 const ProductCardWrapper = styled(Link)`
   ${commonCardStyles}
-  position: relative; // Ensure the wrapper is relative for absolute positioning of children
-  // Add box-shadow for card effect
+  position: relative; 
+
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
 
   &:hover {
-    transform: translateY(-5px); // Example of hover effect
+    transform: translateY(-5px);
   }
 `;
 
@@ -64,7 +63,7 @@ const ProductItem = ({ product }) => {
           <span className="text-gray">
             {product.cat.map((cat) => cat.categoryName).join(', ')}
           </span>
-          <span className="text-outerspace font-bold">${product.price}</span>
+          <span className="text-outerspace font-bold">₹{product.price}</span>
         </div>
       </ProductInfo>
     </ProductCardWrapper>

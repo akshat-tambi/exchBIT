@@ -16,7 +16,7 @@ const DetailsContent = styled.div`
   display: grid;
   grid-template-columns: 1fr 1px 1fr;
   gap: 40px;
-  padding-left: 20px; /* Add left padding */
+  padding-left: 20px; /*
   
   @media (max-width: ${breakpoints.xl}) {
     gap: 24px;
@@ -39,7 +39,7 @@ const ProductDetailsWrapper = styled.div`
   padding: 24px;
 
   .prod-title {
-    margin-bottom: 20px; /* Increased margin */
+    margin-bottom: 20px; 
   }
 
   .rating-and-comments {
@@ -144,7 +144,7 @@ const ProductColorWrapper = styled.div`
 `;
 
 const AddToCartButton = styled.button`
-  background-color: rgba(83, 178, 172, 1); /* Direct RGB values */
+  background-color: rgba(83, 178, 172, 1); 
   color: white;
   padding: 10px 20px;
   border: none;
@@ -155,11 +155,11 @@ const AddToCartButton = styled.button`
   width: 160px;  
   height:40px;
   .bi-cart2 {
-    margin-right: 8px; /* Adjust icon margin */
+    margin-right: 8px; 
   }
 `;
 const AddToWishList=styled.button`
-   background-color: rgba(83, 178, 172, 1); /* Direct RGB values */
+   background-color: rgba(83, 178, 172, 1); 
   color: white;
   padding: 10px 20px;
   border: none;
@@ -170,26 +170,26 @@ const AddToWishList=styled.button`
 `;
 
 const DetailsScreenWrapper = styled.div`
-  padding-top: 20px; /* Add padding from above */
-  padding-right: 20px; /* Add padding from the right */
-  padding-left: 20px; /* Add padding from the left */
+  padding-top: 20px; 
+  padding-right: 20px; 
+  padding-left: 20px; 
 `;
 
 const ProductInfo = styled.div`
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Take remaining space */
+  flex-grow: 1; 
 `;
 
 const ProductFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px; /* Add margin from above */
+  margin-top: 20px; 
 `;
 
 const PriceText = styled.span`
-  font-size: 18px; /* Example font size */
+  font-size: 18px; 
   font-weight: bold;
 `;
 
