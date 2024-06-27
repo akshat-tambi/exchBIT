@@ -83,6 +83,7 @@ const FilterPage = () => {
 
   const fetchProductsByCategory = async () => {
     try {
+      
       const response = await getProductsByCategory(categoryName);
       if (response.success) {
         setProducts(response.products);

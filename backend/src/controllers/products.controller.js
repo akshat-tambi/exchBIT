@@ -55,7 +55,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     res.status(201).json({ success: true, product });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred while creating the product" });
+    res.status(500).json({ success: false, message: "An error occurred during ad creation!" });
   }
 });
 
@@ -116,13 +116,13 @@ export const updateProduct = asyncHandler(async (req, res) => {
       await Category.findByIdAndUpdate(oldCategory._id, { $pull: { prodList: product._id } });
     }));
 
-    const notificationMessage = `A Product ${pName} has been updated.`;
+    const notificationMessage = `Product ${pName} has been updated.`;
     await sendNotification(userId, notificationMessage);
 
     res.status(200).json({ success: true, product });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred while updating the product" });
+    res.status(500).json({ success: false, message: "An error occurred during ad updation!" });
   }
 });
 
@@ -165,7 +165,7 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     await sendNotification(user._id, notificationMessage);
   }));
 
-  res.status(200).json({ success: true, message: "Product deleted successfully" });
+  res.status(200).json({ success: true, message: "Ad deleted successfully!" });
 });
 
 export const getUserProducts = asyncHandler(async (req, res) => {
@@ -178,7 +178,7 @@ export const getUserProducts = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, products: user.productsOwned });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred while fetching user's products" });
+    res.status(500).json({ success: false, message: "An error occurred while fetching your ads!" });
   }
 });
 
@@ -188,7 +188,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, products });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred while fetching all products" });
+    res.status(500).json({ success: false, message: "An error occurred during ad fetch!" });
   }
 });
 
@@ -197,12 +197,12 @@ export const getProductById = asyncHandler(async (req, res) => {
 
   try {
     const product = await Product.findOne({ _id: id, status: { $ne: true } });
-    if (!product) throw new ApiError(404, "Product not found");
+    if (!product) throw new ApiError(404, "Ad not found!");
     
     res.status(200).json({ success: true, product });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred while fetching the product" });
+    res.status(500).json({ success: false, message: "An error occurred during ad fetch!" });
   }
 });
 
@@ -214,14 +214,14 @@ export const getProductByCategory = asyncHandler(async (req, res) => {
       path: 'prodList',
       match: { status: { $ne: true } }
     });
-    if (!category) throw new ApiError(404, "Category not found");
+    if (!category) throw new ApiError(404, "Category not found!");
 
     const products = category.prodList;
-
+    
     res.status(200).json({ success: true, products });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred while fetching products by category" });
+    res.status(500).json({ success: false, message: "An error occurred while fetching ads by category!" });
   }
 });
 
@@ -232,5 +232,5 @@ export const SetStatus = asyncHandler(async (req, res) => {
     status: true 
   });
 
-  res.status(201).json(new ApiResponse(201, "Product status updated successfully"));
+  res.status(201).json(new ApiResponse(201, "Ad status updated successfully"));
 });

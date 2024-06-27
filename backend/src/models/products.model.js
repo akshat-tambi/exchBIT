@@ -30,10 +30,10 @@ const productSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
-    requests: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Request'
-      }],
+    // requests: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Request'
+    //   }],
 }, {
     timestamps: true
 });

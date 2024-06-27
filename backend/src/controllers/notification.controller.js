@@ -1,5 +1,6 @@
-import { User } from "../models/user.model.js"; // Import the User model
+import { User } from "../models/user.model.js"; 
 import { asyncHandler } from "../utils/asyncHandler.js";
+import {Notification} from "../models/notification.model.js" ;
 
 export const sendNotification = asyncHandler(async (userId, message) => {
     const notification = new Notification({ user: userId, message });
@@ -18,6 +19,6 @@ export const getUserNotifications = asyncHandler(async (req, res) => {
         res.status(200).json({ success: true, notifications });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: "An error occurred while fetching user's notifications" });
+        res.status(500).json({ success: false, message: "An error occurred while fetching notifications" });
     }
 });

@@ -23,7 +23,7 @@ const generateAccessAndRefreshTokens= async(userid)=>{
        
         
     } catch (error) {
-        throw new ApiError(409,"some error while generating access Token and refresh Token")
+        throw new ApiError(409,"token gen error!")
     }
 }
 
@@ -42,7 +42,7 @@ const registerUser=asyncHandler(async(req,res)=>{
     })
     console.log(exist);
     if(exist){
-        throw new ApiError(400,"this account already exists");
+        throw new ApiError(400,"Account already exists!");
     }
 
     //if user doesnt exist update it in database
@@ -55,12 +55,12 @@ const registerUser=asyncHandler(async(req,res)=>{
     const check=await User.findById(user._id).select("-password -refreshToken");
 
     if(!check){
-        throw new ApiError(500,"user has not been registered");
+        throw new ApiError(500,"Not Registered!");
     }
 
     //return to database
     return res.status(201).json(
-       new ApiResponse(201,check,"user registered successfully")
+       new ApiResponse(201,check,"Reg. success!")
     )
 });
 
@@ -71,7 +71,7 @@ const LoginUser=asyncHandler(async(req,res)=>{
    //check if data is filled fully
    if(!username || !password || !email){
     console.log(req.body);
-    throw new ApiError(401,"all details are missing");
+    throw new ApiError(401,"Pls fill all fields!");
    }
 
    //check if user exist in the database
@@ -80,14 +80,14 @@ const LoginUser=asyncHandler(async(req,res)=>{
    })
 
    if(!exist){
-    throw new ApiError(500,"there is no account with this username or email please register first");
+    throw new ApiError(500,"No accounts exists with these details, please register first!");
    }
    
 
    //verify the password from userschema method
    const check=exist.isPasswordTrue(password);
    if(!check){
-     throw new ApiError(409,"incorrect password given");
+     throw new ApiError(409,"Incorrect password!");
    }
 
    //if verified return the acess and refresh token
@@ -106,16 +106,16 @@ const LoginUser=asyncHandler(async(req,res)=>{
    return res.status(200)
    .cookie("accessToken",accessToken,options)
    .cookie("refreshToken",refreshToken,options)
-   .json(new ApiResponse(200,loggedDetail,"logged successfully"))
+   .json(new ApiResponse(200,loggedDetail,"LogIn Success!"))
 });
 
 const RemoveProductWish = asyncHandler(async (req, res) => {
-    const { id } = req.params;  // This is the ID of the product to be removed from the wishlist
-    const userId = req.user._id; // This is the ID of the user making the request
+    const { id } = req.params;  //  product to be removed from the wishlist
+    const userId = req.user._id; // user making the request
 
     try {
-        console.clear();
-        console.log("Product ID to remove:", id);
+        // console.clear();
+        // console.log("Product ID to remove:", id);
         const user = await User.findByIdAndUpdate(
             userId,
             { $pull: { wishList: id } }, // Remove the product ID from the wishlist
@@ -123,13 +123,13 @@ const RemoveProductWish = asyncHandler(async (req, res) => {
         );
 
         if (!user) {
-            throw new ApiError(401, 'Error in removing product from wishlist');
+            throw new ApiError(401, 'Error in removing product from wishlist!');
         }
 
-        res.status(200).json(new ApiResponse(200, user, "Removed from wishlist successfully"));
+        res.status(200).json(new ApiResponse(200, user, "Product removed successfully!"));
     } catch (err) {
         console.error(err);
-        throw new ApiError(401, 'Error in removing product from wishlist');
+        throw new ApiError(401, 'Error in removing product from wishlist!');
     }
 });
 
@@ -152,23 +152,23 @@ const LogoutUser=asyncHandler((req,res)=>{
      return res.status(200)
      .clearCookie("accessToken",options)
      .clearCookie("refreshToken",options)
-     .json(new ApiResponse(200,{},"user logged out successfully"))
+     .json(new ApiResponse(200,{},"LogOut Success!"))
 })
 
 const refreshAccesToken=asyncHandler(async(req,res)=>{
      const token=req.cookie.refreshToken || req.body
 
      if(!token){
-        throw new ApiError(401,"some error in getting refreshToken");
+        throw new ApiError(401,"Unable to obtain refreshToken!");
      }
      const decoded=jwt.verify(token,process.env.REFRESH_TOKEN_SECRET);
 
      const check= await User.findById(decoded?._id);
      if(!check){
-        throw new ApiError(401,"error in authorisation")
+        throw new ApiError(401,"Auth error!")
      }
      if(check.refreshToken!==token){
-        throw new ApiError(401,"some error in refreshing");
+        throw new ApiError(401,"Refresh error!");
      }
 
      const {accessToken,refreshToken}=await generateAccessAndRefreshTokens(check._id)
@@ -178,7 +178,7 @@ const refreshAccesToken=asyncHandler(async(req,res)=>{
         secure:true
      }
      res.status(201).cookie("accessToken",accessToken,options).cookie("refreshToken",refreshToken,options)
-     .json(new ApiResponse(201,{accessToken,refreshToken},"ok AccessToken refreshed"));
+     .json(new ApiResponse(201,{accessToken,refreshToken},"Ok! AccessToken refreshed!"));
 })
 
 const editUser=asyncHandler(async(req,res)=>{
@@ -194,7 +194,7 @@ const editUser=asyncHandler(async(req,res)=>{
         },{
             new:true
         });
-        res.status(201).json(new ApiResponse(201,updateFind,"user data is updated"));
+        res.status(201).json(new ApiResponse(201,updateFind,"Update success!"));
 })
 
 const WishListFetch=asyncHandler(async(req,res)=>{
@@ -203,12 +203,12 @@ const WishListFetch=asyncHandler(async(req,res)=>{
 
     if(!userId){
         
-        throw new ApiError(501,"id is not fetched");
+        throw new ApiError(501,"ID Fetch error!");
     }
 
     const userWish = await User.findById(userId).populate('wishList');
     if (!userWish) {
-        throw new ApiError(404, "User not found");
+        throw new ApiError(404, "User not found!");
     }
     console.log("wishdata",userWish.wishList);
     // alert(userWish.wishList);
@@ -256,13 +256,13 @@ const SetProductWish = asyncHandler(async (req, res) => {
       );
   
       if (!user) {
-        throw new ApiError(401, 'Error in setting product in wishlist');
+        throw new ApiError(401, 'Unable to add product in wishlist!');
       }
   
-      res.status(201).json(new ApiResponse(201,user,"added to wishList successfully"));
+      res.status(201).json(new ApiResponse(201,user,"Added to wishlist successfully"));
     } catch (err) {
       console.error(err);
-      throw new ApiError(401, 'Error in setting product in wishlist');
+      throw new ApiError(401, 'Unable to add product in wishlist!');
     }
   });
 const RetrieveUser=asyncHandler((req,res)=>{
@@ -278,14 +278,14 @@ const FindUserById=asyncHandler(async(req,res)=>{
     try {
         const UserData=await User.findById(userId);
         if(!UserData){
-            throw new ApiError(501,"some error in getting user details");
+            throw new ApiError(501,"Unable to get user details!");
         }
         res.status(201).json(
             new ApiResponse(201,UserData)
         )
     } catch (error) {
         console.log(error);
-        throw new ApiError(501,"there is some internal server error please try again later");
+        throw new ApiError(501,"Internal Server Error: Try again later!");
     }
 })
 

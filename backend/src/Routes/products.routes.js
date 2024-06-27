@@ -15,13 +15,13 @@ import {
 const router = express.Router();
 const upload = multer({ dest: "uploads/" }); 
 
-router.post("/NewProduct", verifyJWT, upload.array('media', 10), createProduct); //
-router.put("/:id", verifyJWT, upload.array('newMedia', 10), updateProduct); //
-router.delete("/:id", verifyJWT, deleteProduct);//
-router.get("/user", verifyJWT, getUserProducts);//
-router.get("/", getAllProducts);//
-router.get("/:id", getProductById);//
+router.post("/NewProduct", verifyJWT, upload.array('media', 10), createProduct); //tested
+router.put("/:id", verifyJWT, upload.array('newMedia', 10), updateProduct); //tested
+router.delete("/:id", verifyJWT, deleteProduct);//tested
+router.get("/user", verifyJWT, getUserProducts);//tested
+router.get("/", getAllProducts);//tested
+router.get("/:id", getProductById);//tested
 router.patch("/:id",SetStatus);
-router.get('/category/:categoryName', getProductByCategory); // Route for getting products by category
+router.get('/category/:categoryName', getProductByCategory); // tested
 
 export default router;

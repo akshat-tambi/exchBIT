@@ -2,9 +2,9 @@ import { WebSocketServer } from 'ws';
 import { createClient } from 'redis';
 import { Chat } from './models/chat.model.js';
 import { User } from './models/user.model.js';
-import { Notification } from './models/notification.model.js';
+// import { Notification } from './models/notification.model.js';
 import { Product } from './models/products.model.js';
-import { Request } from './models/request.model.js';
+// import { Request } from './models/request.model.js';
 
 const redisClient = createClient({
     url: 'redis://localhost:6379'

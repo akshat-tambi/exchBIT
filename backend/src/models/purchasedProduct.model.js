@@ -1,4 +1,3 @@
-// models/purchasedProduct.model.js
 import mongoose, { Schema } from "mongoose";
 
 const purchasedProductSchema = new Schema({
