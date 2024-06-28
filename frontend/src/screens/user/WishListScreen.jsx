@@ -175,24 +175,10 @@ const WishListScreen = () => {
                           {wishlist.pName}
                         </p>
                       )}
-                      <ul className="flex flex-col">
-                        <li>
-                          <span className="text-lg font-bold">Description:</span>
-                          <span className="text-lg text-gray font-medium capitalize">
-                            {wishlist.desc}
-                          </span>
-                        </li>
-                        <li>
-                          <span className="text-lg font-bold">Status:</span>
-                          <span className="text-lg text-gray font-medium capitalize">
-                            {wishlist.status ? "Unavailable" : "Available"}
-                          </span>
-                        </li>
-                      </ul>
                     </div>
                     <div className="wish-item-info-r flex items-center">
                       <span className="wish-item-price text-xl text-gray font-bold">
-                        price: ${wishlist.price}
+                        price: ₹{wishlist.price}
                       </span>
                     </div>
                   </div>

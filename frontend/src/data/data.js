@@ -12,11 +12,6 @@ const navMenuData = [
     menuText: "Sign In",
   },
   {
-    id: "nav-menu-3",
-    menuLink: "/sign_up",
-    menuText: "Sign Up",
-  },
-  {
     id: "nav-menu-4",
     menuLink: "/chats",
     menuText: "Chats",
