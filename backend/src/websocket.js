@@ -174,10 +174,10 @@ wss.on('connection', async (ws) => {
                     broadcastToRoom(roomKey, { type: 'CHAT_MESSAGE', chatId, chatMessage });
             
         
-                    if (chat) {
-                        chat.messages.push(chatMessage);
-                        await chat.save();
-                    }
+                    // if (chat) {
+                    //     chat.messages.push(chatMessage);
+                    //     await chat.save();
+                    // }
             
                 } catch (error) {
                     console.log("Error handling CHAT_MESSAGE:", error);
