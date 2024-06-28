@@ -154,14 +154,12 @@ const EditProductForm = () => {
         withCredentials: true
       });
 
-      // Clear form fields
       setProductName('');
       setDescription('');
       setPrice('');
       setImage(null);
       setCategory('');
 
-      // Show success message
       alert('Product updated successfully!');
     } catch (error) {
       console.error('Error updating product!', error);

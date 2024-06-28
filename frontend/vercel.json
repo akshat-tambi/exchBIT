@@ -1,24 +1,13 @@
 {
-    "routes": [
-      {
-        "handle": "filesystem"
-      },
-      {
-        "src": "/api/.*",
-        "dest": "https://exchbit.onrender.com/:splat",
-        "methods": ["GET", "POST", "PUT", "DELETE"]
-      },
-      {
-        "src": "/assets/(.*)",
-        "headers": {
-          "Content-Type": "text/css"
+    "rewrites": [
+        {
+            "source": "/api/:path(.*)",
+            "destination": "https://exchbit.onrender.com/api/:path"
+            
         },
-        "dest": "/assets/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/index.html"
-      }
-    ]
-  }
-  
+        {
+            "source": "/(.*)",
+            "destination": "/"
+   }
+]
+}
