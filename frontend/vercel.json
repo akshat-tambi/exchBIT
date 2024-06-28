@@ -1,0 +1,14 @@
+{
+    "routes": [
+      {
+        "src": "/api/(.*)", 
+        "dest": "https://exchbit.onrender.com/api/$1", 
+        "methods": ["GET", "POST", "PUT", "DELETE"]
+      },
+      {
+        "src": "/(.*)", 
+        "dest": "/index.html"
+      }
+    ]
+  }
+  
