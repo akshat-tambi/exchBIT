@@ -78,7 +78,7 @@ const UserMenu = () => {
         });
         setUserDetail(response.data.data);
       } catch (error) {
-        console.log(error);
+        //console.log(error);
         alert('Please try again later!');
       }
     };

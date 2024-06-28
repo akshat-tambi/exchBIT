@@ -100,7 +100,7 @@ const ProductItemUser = ({ product }) => {
       });
       alert("this product is updated to WishList")
      } catch (error) {
-       console.log("Error in adding product to wishlist!");
+       //console.log("Error in adding product to wishlist!");
        alert("Unable to add this product to wishlist!");
      }
   }

@@ -56,7 +56,7 @@ const SignInScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        console.log(formData);
+        //console.log(formData);
         const response = await axios.post('/api/v1/users/logging', formData, {
             withCredentials: true, // Ensure cookies are sent with the request
         });

@@ -85,7 +85,7 @@ const WishListScreen = () => {
           'Accept': 'application/json',
         },
       });
-      console.log("wishdata1", response.data.data);
+      //console.log("wishdata1", response.data.data);
 
       if (Array.isArray(response.data.data)) {
         setData(response.data.data);
@@ -103,7 +103,7 @@ const WishListScreen = () => {
     const confirmRemove = window.confirm("Are you sure you want to remove this item from your wishlist?");
     if (confirmRemove) {
       try {
-        console.log("Attempting to remove product with ID:", productId);
+        //console.log("Attempting to remove product with ID:", productId);
         await axios.put(`/api/v1/users/WishList/${productId}`, {}, {
           withCredentials: true,
           headers: {

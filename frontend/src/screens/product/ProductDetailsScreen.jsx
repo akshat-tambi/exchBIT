@@ -227,7 +227,7 @@ const ProductDetailsScreen = () => {
         const userId = response.data.data;
 
         if (!userId) {
-            console.log("Error in authentication");
+            //console.log("Error in authentication");
             alert("Error in authentication, please log in again.");
             return;
         }
@@ -252,7 +252,7 @@ const ProductDetailsScreen = () => {
         };
 
         ws.onclose = () => {
-            console.log("WebSocket connection closed");
+            //console.log("WebSocket connection closed");
         };
     } catch (error) {
         console.error("Error in handleAddToCart:", error);
@@ -267,7 +267,7 @@ const ProductWishList=async()=>{
    });
    alert("this product is updated to WishList")
   } catch (error) {
-    console.log("Error in adding product to wishlist",error);
+    //console.log("Error in adding product to wishlist",error);
     alert("error in adding the product to the wishlist");
   }
 }

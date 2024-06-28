@@ -121,7 +121,7 @@ const ChatPage = () => {
       ws.current = new WebSocket("wss://exchbit.onrender.com");
 
       ws.current.onopen = () => {
-        console.log('WebSocket connection opened');
+        //console.log('WebSocket connection opened');
 
         if (chatId && userId) {
           ws.current.send(JSON.stringify({ type: 'JOIN_ROOM', chatId }));
@@ -142,7 +142,7 @@ const ChatPage = () => {
       };
 
       ws.current.onclose = () => {
-        console.log('WebSocket connection closed');
+        //console.log('WebSocket connection closed');
       };
     };
 

@@ -124,7 +124,7 @@ const CreateProduct = () => {
           },
         }
       );
-      console.log("Product created:", response.data);
+      //console.log("Product created:", response.data);
 
       setFormData({
         productName: "",
