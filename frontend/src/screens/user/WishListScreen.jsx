@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Container } from "../../styles/styles";
 import Breadcrumb from "../../components/common/Breadcrumb";
 import { UserContent, UserDashboardWrapper } from "../../styles/user";
@@ -8,14 +8,11 @@ import UserMenu from "../../components/user/UserMenu";
 import Title from "../../components/common/Title";
 import { Link } from "react-router-dom";
 
-// Define the main wrapper for the wishlist screen
 const WishListScreenWrapper = styled.main`
   .wishlist {
     gap: 20px;
   }
 `;
-
-// Define the wrapper for each wish item
 const WishItemWrapper = styled.div`
   gap: 30px;
   max-width: 900px;
@@ -26,104 +23,52 @@ const WishItemWrapper = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-
-  .wish-item-img {
-    position: relative;
-
-    .wish-remove-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(83, 178, 172, 1);
-      border: none;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: #fff;
-
-      i {
-        font-size: 16px;
-      }
-    }
-
-    .wish-item-img-wrapper {
-      width: 100%;
-      height: 200px;
-      overflow: hidden;
-      border-radius: 8px;
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+  opacity: ${(props) => (props.soldOut ? 0.5 : 1)}; /* Adjust opacity for sold-out items */
+  pointer-events: ${(props) => (props.soldOut ? "none" : "auto")}; /* Disable interaction for sold-out items except the remove button */
+  
+  .wish-remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(83, 178, 172, 1);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    z-index: 1; /* Ensure the button is always on top */
+    pointer-events: auto; /* Ensure the remove button is always clickable */
+    i {
+      font-size: 16px;
     }
   }
 
-  .wish-item-info {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-
-    .wish-item-info-l {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-
-      .wish-item-title {
-        margin-bottom: 10px;
-      }
-
-      ul {
-        list-style: none;
-        padding: 0;
-
-        li {
-          margin-bottom: 10px;
-
-          span:first-child {
-            font-weight: bold;
-            margin-right: 5px;
-          }
-        }
-      }
-    }
-
-    .wish-item-info-r {
-      display: flex;
-      align-items: center;
-
-      .wish-item-price {
-        font-size: 1.25rem;
-        font-weight: bold;
-      }
-
-      .wish-cart-btn {
-        margin-left: 20px;
-        padding: 10px 20px;
-        background: rgba(83, 178, 172, 1);
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-      }
+  .wish-item-img-wrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 8px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: ${(props) => (props.soldOut ? "grayscale(100%)" : "none")}; /* Apply grayscale filter for sold-out items */
     }
   }
 `;
 
-// Define the breadcrumb items
+
 const breadcrumbItems = [
   { label: "Home", link: "/" },
   { label: "Wishlist", link: "/wishlist" },
 ];
 
-// Define the WishListScreen component
 const WishListScreen = () => {
-  const [data, setData] = useState([]); // Initialize as empty array
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -141,11 +86,11 @@ const WishListScreen = () => {
         },
       });
       console.log("wishdata1", response.data.data);
-      // Check if response.data is an array
+
       if (Array.isArray(response.data.data)) {
         setData(response.data.data);
       } else {
-        setData([]); // Reset to empty array if not an array
+        setData([]);
       }
     } catch (err) {
       setError(err);
@@ -165,7 +110,7 @@ const WishListScreen = () => {
             'Accept': 'application/json',
           },
         });
-        // Remove item from local state
+
         setData(data.filter(item => item._id !== productId));
       } catch (err) {
         setError(err);
@@ -189,72 +134,72 @@ const WishListScreen = () => {
               <p>No items!</p>
             ) : (
               <div className="wishlist grid">
-                {data.map((wishlist) => (
-                  <WishItemWrapper className="wish-item flex" key={wishlist._id}>
-                    <div className="wish-item-img flex items-stretch">
-                      <button 
-                        type="button" 
-                        className="wish-remove-btn"
-                        onClick={() => handleRemoveFromWishlist(wishlist._id)}
-                      >
-                        <i className="bi bi-x-lg"></i>
-                      </button>
-                      <div className="wish-item-img-wrapper">
-                        {console.log(wishlist.status)}
-                        {wishlist.status !== "true" ? (
-                          <Link to={`/product/details/${wishlist._id}`}>
-                            <img
-                              src={wishlist.media[0]}
-                              className="object-fit-cover"
-                              alt={wishlist.pName}
-                            />
-                          </Link>
-                        ) : (
+              {data.map((wishlist) => (
+                <WishItemWrapper className="wish-item flex" key={wishlist._id} soldOut={wishlist.status === true}>
+                  <div className="wish-item-img flex items-stretch">
+                    <button 
+                      type="button" 
+                      className="wish-remove-btn"
+                      onClick={() => handleRemoveFromWishlist(wishlist._id)}
+                    >
+                      <i className="bi bi-x-lg"></i>
+                    </button>
+                    <div className="wish-item-img-wrapper">
+                      {wishlist.status !== true ? (
+                        <Link to={`/product/details/${wishlist._id}`}>
                           <img
                             src={wishlist.media[0]}
                             className="object-fit-cover"
                             alt={wishlist.pName}
                           />
-                        )}
-                      </div>
+                        </Link>
+                      ) : (
+                        <img
+                          src={wishlist.media[0]}
+                          className="object-fit-cover"
+                          alt={wishlist.pName}
+                        />
+                      )}
                     </div>
-                    <div className="wish-item-info flex justify-between">
-                      <div className="wish-item-info-l flex flex-col">
-                        {wishlist.status !== "true" ? (
-                          <Link to={`/product/details/${wishlist._id}`}>
-                            <p className="wish-item-title text-xl font-bold text-outerspace">
-                              {wishlist.pName}
-                            </p>
-                          </Link>
-                        ) : (
+                  </div>
+                  <div className="wish-item-info flex justify-between">
+                    <div className="wish-item-info-l flex flex-col">
+                      {wishlist.status !== true ? (
+                        <Link to={`/product/details/${wishlist._id}`}>
                           <p className="wish-item-title text-xl font-bold text-outerspace">
                             {wishlist.pName}
                           </p>
-                        )}
-                        <ul className="flex flex-col">
-                          <li>
-                            <span className="text-lg font-bold">Description:</span>
-                            <span className="text-lg text-gray font-medium capitalize">
-                              {wishlist.desc}
-                            </span>
-                          </li>
-                          <li>
-                            <span className="text-lg font-bold">Status:</span>
-                            <span className="text-lg text-gray font-medium capitalize">
-                              {wishlist.status ? "Unavailable" : "Available"}
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="wish-item-info-r flex items-center">
-                        <span className="wish-item-price text-xl text-gray font-bold">
-                          price: ${wishlist.price}
-                        </span>
-                      </div>
+                        </Link>
+                      ) : (
+                        <p className="wish-item-title text-xl font-bold text-outerspace">
+                          {wishlist.pName}
+                        </p>
+                      )}
+                      <ul className="flex flex-col">
+                        <li>
+                          <span className="text-lg font-bold">Description:</span>
+                          <span className="text-lg text-gray font-medium capitalize">
+                            {wishlist.desc}
+                          </span>
+                        </li>
+                        <li>
+                          <span className="text-lg font-bold">Status:</span>
+                          <span className="text-lg text-gray font-medium capitalize">
+                            {wishlist.status ? "Unavailable" : "Available"}
+                          </span>
+                        </li>
+                      </ul>
                     </div>
-                  </WishItemWrapper>
-                ))}
-              </div>
+                    <div className="wish-item-info-r flex items-center">
+                      <span className="wish-item-price text-xl text-gray font-bold">
+                        price: ${wishlist.price}
+                      </span>
+                    </div>
+                  </div>
+                </WishItemWrapper>
+              ))}
+            </div>
+              
             )}
           </UserContent>
         </UserDashboardWrapper>
