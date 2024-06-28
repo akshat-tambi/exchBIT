@@ -85,7 +85,6 @@ const ChatPage = () => {
   const [senderName, setSenderName] = useState('');
   const ws = useRef(null);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -121,11 +120,12 @@ const ChatPage = () => {
       ws.current = new WebSocket("wss://exchbit.onrender.com");
 
       ws.current.onopen = () => {
-        //console.log('WebSocket connection opened');
+        console.log('WebSocket connection opened');
 
         if (chatId && userId) {
           ws.current.send(JSON.stringify({ type: 'JOIN_ROOM', chatId }));
           ws.current.send(JSON.stringify({ type: 'TRIGGER_SAVE' }));
+          fetchChatHistory(); // Fetch chat history only after WebSocket connection is opened
         }
       };
 
@@ -142,22 +142,16 @@ const ChatPage = () => {
       };
 
       ws.current.onclose = () => {
-        //console.log('WebSocket connection closed'); 
+        console.log('WebSocket connection closed');
       };
     };
- 
-    fetchUserId();
-    
 
-    setTimeout(() => {
-      if (userId) {
-        fetchChatHistory();
-      }
+    const initializeChat = async () => {
+      await fetchUserId();
+      connectWebSocket();
+    };
 
-      setTimeout(()=>{
-        connectWebSocket();
-      },100)
-    }, 100);
+    initializeChat();
 
     return () => {
       if (ws.current) {
@@ -176,6 +170,7 @@ const ChatPage = () => {
       }
     }
   };
+
 
   return (
     <ChatPageWrapper>
