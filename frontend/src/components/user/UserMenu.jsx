@@ -73,7 +73,7 @@ const UserMenu = () => {
   useEffect(() => {
     const fetchUserDetail = async () => {
       try {
-        const response = await axios.post(`https://exchbit.onrender.com/api/v1/users/FindUser`, {}, {
+        const response = await axios.post(`/api/v1/users/FindUser`, {}, {
           withCredentials: true,
         });
         setUserDetail(response.data.data);

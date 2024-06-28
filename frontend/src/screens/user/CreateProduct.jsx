@@ -115,7 +115,7 @@ const CreateProduct = () => {
 
     try {
       const response = await axios.post(
-        "https://exchbit.onrender.com/api/v1/products/NewProduct",
+        "/api/v1/products/NewProduct",
         data,
         {
           withCredentials: true,

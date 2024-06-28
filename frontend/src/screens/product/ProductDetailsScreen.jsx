@@ -220,7 +220,7 @@ const ProductDetailsScreen = () => {
 
   const handleAddToCart = async () => {
     try {
-        const response = await axios.post("https://exchbit.onrender.com/api/v1/users/protectedRoute", {}, {
+        const response = await axios.post("/api/v1/users/protectedRoute", {}, {
             withCredentials: true, 
         });
 
@@ -262,12 +262,12 @@ const ProductDetailsScreen = () => {
 
 const ProductWishList=async()=>{
   try {
-   const MyWishList=await axios.put(`https://exchbit.onrender.com/api/v1/users/SetWish/${product._id}`,{},{
+   const MyWishList=await axios.put(`/api/v1/users/SetWish/${product._id}`,{},{
     withCredentials:true
    });
    alert("this product is updated to WishList")
   } catch (error) {
-    console.log("Error in adding product to wishlidt",error);
+    console.log("Error in adding product to wishlist",error);
     alert("error in adding the product to the wishlist");
   }
 }

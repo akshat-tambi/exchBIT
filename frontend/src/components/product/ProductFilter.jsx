@@ -144,8 +144,8 @@ const FilterPage = () => {
               range
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginTop: '10px' }}>
-              <span>${filters.minPrice}</span>
-              <span>${filters.maxPrice}</span>
+              <span>₹{filters.minPrice}</span>
+              <span>₹{filters.maxPrice}</span>
             </div>
             <FilterButton type="submit">Apply Filters</FilterButton>
           </FilterForm>
