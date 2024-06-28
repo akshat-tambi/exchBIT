@@ -33,7 +33,7 @@ const ChatHistoryPage = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await axios.post("https://exchbit.onrender.com/api/v1/users/protectedRoute", {}, {
+        const response = await axios.post("/api/v1/users/protectedRoute", {}, {
           withCredentials: true,
         });
 
@@ -52,7 +52,7 @@ const ChatHistoryPage = () => {
       try {
         if (!userId) return; // Ensure userId is fetched before fetching chats
 
-        const response = await axios.get(`https://exchbit.onrender.com/api/v1/chats/user/${userId}`, {
+        const response = await axios.get(`/api/v1/chats/user/${userId}`, {
           withCredentials: true,
         });
 
