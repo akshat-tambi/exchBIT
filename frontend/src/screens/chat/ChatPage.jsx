@@ -142,17 +142,21 @@ const ChatPage = () => {
       };
 
       ws.current.onclose = () => {
-        //console.log('WebSocket connection closed');
+        //console.log('WebSocket connection closed'); 
       };
     };
  
     fetchUserId();
-    connectWebSocket();
+    
 
     setTimeout(() => {
       if (userId) {
         fetchChatHistory();
       }
+
+      setTimeout(()=>{
+        connectWebSocket();
+      },100)
     }, 100);
 
     return () => {
