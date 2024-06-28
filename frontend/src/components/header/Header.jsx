@@ -4,10 +4,10 @@ import { Container } from "../../styles/styles";
 import { staticImages } from "../../utils/images";
 import { navMenuData } from "../../data/data";
 import { Link, useLocation } from "react-router-dom";
-import { Input, InputGroupWrapper } from "../../styles/form";
 import { breakpoints, defaultTheme } from "../../styles/themes/default";
 import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../../redux/slices/sidebarSlice";
+import { useState } from "react";
 
 const NavigationAndSearchWrapper = styled.div`
   column-gap: 20px;
@@ -44,14 +44,35 @@ const NavigationAndSearchWrapper = styled.div`
     width: 100%;
     justify-content: flex-end;
   }
+
+  .menu-toggler {
+    display: none;
+    font-size: 24px;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    @media (max-width: ${breakpoints.lg}) {
+      display: inline-block;
+    }
+  }
 `;
 
 const NavigationMenuWrapper = styled.nav`
   .nav-menu-list {
     margin-left: 20px;
+    display: flex;
 
     @media (max-width: ${breakpoints.lg}) {
       flex-direction: column;
+      position: absolute;
+      top: 60px; /* adjust based on your header height */
+      right: 0;
+      width: 100%;
+      background: ${defaultTheme.color_white};
+      z-index: 999;
+      display: ${(props) => (props.isMenuOpen ? "flex" : "none")};
     }
   }
 
@@ -74,17 +95,6 @@ const NavigationMenuWrapper = styled.nav`
     &:hover {
       color: ${defaultTheme.color_outerspace};
     }
-  }
-
-  @media (max-width: ${breakpoints.lg}) {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 260px;
-    background: ${defaultTheme.color_white};
-    height: 100%;
-    z-index: 999;
-    display: none;
   }
 `;
 
@@ -119,6 +129,11 @@ const IconLinksWrapper = styled.div`
 const Header = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <HeaderMainWrapper className="header flex items-center">
@@ -144,34 +159,29 @@ const Header = () => {
             </SiteBrandWrapper>
           </div>
           <NavigationAndSearchWrapper className="flex items-center">
-            <NavigationMenuWrapper>
+            <NavigationMenuWrapper isMenuOpen={isMenuOpen}>
               <ul className="nav-menu-list flex items-center">
-                {navMenuData?.map((menu) => {
-                  return (
-                    <li className="nav-menu-item" key={menu.id}>
-                      <Link
-                        to={menu.menuLink}
-                        className="nav-menu-link text-base font-medium text-gray"
-                      >
-                        {menu.menuText}
-                      </Link>
-                    </li>
-                  );
-                })}
+                {navMenuData?.map((menu) => (
+                  <li className="nav-menu-item" key={menu.id}>
+                    <Link
+                      to={menu.menuLink}
+                      className={`nav-menu-link text-base font-medium text-gray ${
+                        location.pathname === menu.menuLink ? "active" : ""
+                      }`}
+                    >
+                      {menu.menuText}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </NavigationMenuWrapper>
-            {/* <form className="search-form">
-              <InputGroupWrapper className="input-group">
-                <span className="input-icon flex items-center justify-center text-xl text-gray">
-                  <i className="bi bi-search"></i>
-                </span>
-                <Input
-                  type="text"
-                  className="input-control w-full"
-                  placeholder="Search"
-                />
-              </InputGroupWrapper>
-            </form> */}
+            <button
+              type="button"
+              className="menu-toggler"
+              onClick={toggleMenu}
+            >
+              &#x22EE;
+            </button>
           </NavigationAndSearchWrapper>
 
           <IconLinksWrapper className="flex items-center">
@@ -185,24 +195,10 @@ const Header = () => {
             </Link>
             <Link
               to="/NewProduct"
-              // className={`icon-link ${
-              //   location.pathname === "/account" ||
-              //   location.pathname === "/account/add"
-              //     ? "active"
-              //     : ""
-              // } inline-flex items-center justify-center`}
               className={`icon-link inline-flex items-center justify-center`}
             >
               <img src={staticImages.user} alt="" />
             </Link>
-            {/* <Link
-              to="/cart"
-              className={`icon-link ${
-                location.pathname === "/cart" ? "active" : ""
-              } inline-flex items-center justify-center`}
-            >
-              <img src={staticImages.cart} alt="" />
-            </Link> */}
           </IconLinksWrapper>
         </div>
       </Container>
