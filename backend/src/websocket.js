@@ -1,5 +1,7 @@
 import { WebSocketServer } from 'ws';
 import { kv } from '@vercel/kv';
+import WebSocket from 'ws';
+
 
 import { Chat } from './models/chat.model.js';
 import { User } from './models/user.model.js';
@@ -151,27 +153,38 @@ wss.on('connection', async (ws) => {
                     let { chatId, from, message: msg } = parsedMessage;
                     let chat = await Chat.findById(chatId);
                     let roomKey = `${chat.product}:${chat.owner}:${chat.user}`;
-
+            
+                    
                     if (!rooms.has(roomKey)) {
-                        console.log("Room not found, initializing...");
                         rooms.set(roomKey, new Set());
                     }
-
+            
+                
                     if (!rooms.get(roomKey).has(ws)) {
                         rooms.get(roomKey).add(ws);
                         ws.roomKey = roomKey;
                     }
-
+            
                     const chatMessage = { from, message: msg, timestamp: new Date() };
+            
+        
                     await kv.rpush(`chat:${roomKey}`, JSON.stringify(chatMessage));
-
+            
+        
                     broadcastToRoom(roomKey, { type: 'CHAT_MESSAGE', chatId, chatMessage });
-
+            
+        
+                    if (chat) {
+                        chat.messages.push(chatMessage);
+                        await chat.save();
+                    }
+            
                 } catch (error) {
                     console.log("Error handling CHAT_MESSAGE:", error);
                 }
                 break;
             }
+            
 
             case 'TRIGGER_SAVE': {
                 try {

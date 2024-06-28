@@ -232,7 +232,7 @@ const ProductDetailsScreen = () => {
             return;
         }
 
-        const ws = new WebSocket("ws://localhost:8000");
+        const ws = new WebSocket("wss://exchbit.onrender.com");
 
         ws.onopen = () => {
             ws.send(JSON.stringify({ type: "INITIATE_CHAT", productId, userId }));

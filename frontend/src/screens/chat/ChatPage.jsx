@@ -80,7 +80,7 @@ const ChatPage = () => {
   const { chatId } = useParams();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [userId, setUserId] = useState(null); 
+  const [userId, setUserId] = useState(null);
   const [pName, setPName] = useState('');
   const [senderName, setSenderName] = useState('');
   const ws = useRef(null);
@@ -95,7 +95,7 @@ const ChatPage = () => {
         });
 
         const fetchedUserId = response.data.data;
-        setUserId(fetchedUserId); 
+        setUserId(fetchedUserId);
       } catch (error) {
         console.error("Error fetching userId:", error);
       }
@@ -109,7 +109,6 @@ const ChatPage = () => {
 
         const chatData = response.data;
 
-        
         setPName(chatData.productName);
         setSenderName(chatData.name);
         setMessages(chatData.messages);
@@ -119,11 +118,11 @@ const ChatPage = () => {
     };
 
     const connectWebSocket = () => {
-      ws.current = new WebSocket("ws://localhost:8000");
+      ws.current = new WebSocket("wss://exchbit.onrender.com");
 
       ws.current.onopen = () => {
         console.log('WebSocket connection opened');
-        
+
         if (chatId && userId) {
           ws.current.send(JSON.stringify({ type: 'JOIN_ROOM', chatId }));
           ws.current.send(JSON.stringify({ type: 'TRIGGER_SAVE' }));
@@ -149,7 +148,7 @@ const ChatPage = () => {
 
     fetchUserId();
     connectWebSocket();
-    
+
     setTimeout(() => {
       if (userId) {
         fetchChatHistory();
