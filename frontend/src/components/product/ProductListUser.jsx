@@ -51,7 +51,7 @@ const ProductListUser = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('/api/v1/products/user', {
+        const response = await axios.get('https://exchbit.onrender.com/api/v1/products/user', {
           withCredentials: true,
         });
         setProducts(response.data.products);

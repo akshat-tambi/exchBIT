@@ -79,7 +79,7 @@ const WishListScreen = () => {
   const fetchWishList = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/users/WishList', {
+      const response = await axios.get('https://exchbit.onrender.com/api/v1/users/WishList', {
         withCredentials: true,
         headers: {
           'Accept': 'application/json',
@@ -104,7 +104,7 @@ const WishListScreen = () => {
     if (confirmRemove) {
       try {
         console.log("Attempting to remove product with ID:", productId);
-        await axios.put(`/api/v1/users/WishList/${productId}`, {}, {
+        await axios.put(`https://exchbit.onrender.com/api/v1/users/WishList/${productId}`, {}, {
           withCredentials: true,
           headers: {
             'Accept': 'application/json',

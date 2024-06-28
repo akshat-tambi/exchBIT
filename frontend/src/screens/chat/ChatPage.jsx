@@ -90,7 +90,7 @@ const ChatPage = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await axios.post("http://localhost:8000/api/v1/users/protectedRoute", {}, {
+        const response = await axios.post("https://exchbit.onrender.com/api/v1/users/protectedRoute", {}, {
           withCredentials: true,
         });
 
@@ -103,7 +103,7 @@ const ChatPage = () => {
 
     const fetchChatHistory = async () => {
       try {
-        const response = await axios.post(`http://localhost:8000/api/v1/chats/${chatId}`, { userId }, {
+        const response = await axios.post(`https://exchbit.onrender.com/api/v1/chats/${chatId}`, { userId }, {
           withCredentials: true,
         });
 

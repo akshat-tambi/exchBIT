@@ -83,7 +83,7 @@ const ProductItemUser = ({ product }) => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await axios.delete(`/api/v1/products/${product._id}`, {
+        await axios.delete(`https://exchbit.onrender.com/api/v1/products/${product._id}`, {
           withCredentials: true,
         });
         alert("Product deleted successfully.");
@@ -95,7 +95,7 @@ const ProductItemUser = ({ product }) => {
   };
   const ProductWishList=async()=>{
      try {
-      const MyWishList=await axios.put(`/api/v1/users/SetWish/${product._id}`,{},{
+      const MyWishList=await axios.put(`https://exchbit.onrender.com/api/v1/users/SetWish/${product._id}`,{},{
         withCredentials:true
       });
       alert("this product is updated to WishList")
@@ -111,7 +111,7 @@ const ProductItemUser = ({ product }) => {
     }
     try {
       await axios.patch(
-        `/api/v1/products/${product._id}`,
+        `https://exchbit.onrender.com/api/v1/products/${product._id}`,
         {
           status: true,
         },

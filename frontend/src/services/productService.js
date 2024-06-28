@@ -1,5 +1,5 @@
 import axios from 'axios';
-const BASE_URL = 'http://localhost:8000/api/v1/products';
+const BASE_URL = 'https://exchbit.onrender.com/api/v1/products';
 
 export const getAllProducts = async () => {
   try {

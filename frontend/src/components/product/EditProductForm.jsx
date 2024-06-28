@@ -107,7 +107,7 @@ const EditProductForm = () => {
   useEffect(() => {
     const fetchProductById = async () => {
       try {
-        const productResponse = await axios.get(`/api/v1/products/${editid}`);
+        const productResponse = await axios.get(`https://exchbit.onrender.com/api/v1/products/${editid}`);
         const product = productResponse.data.product;
 
         setProductName(product.pName);
@@ -147,7 +147,7 @@ const EditProductForm = () => {
     }
 
     try {
-      const response = await axios.put(`/api/v1/products/${editid}`, formData, {
+      const response = await axios.put(`https://exchbit.onrender.com/api/v1/products/${editid}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
