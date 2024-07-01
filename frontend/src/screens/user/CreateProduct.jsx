@@ -5,8 +5,8 @@ import Breadcrumb from "../../components/common/Breadcrumb";
 import { UserContent, UserDashboardWrapper } from "../../styles/user";
 import UserMenu from "../../components/user/UserMenu";
 import Title from "../../components/common/Title";
-import { breakpoints, defaultTheme } from "../../styles/themes/default";
-import axios from "axios"; // Import axios for API requests
+import { defaultTheme } from "../../styles/themes/default";
+import axios from "axios";
 
 const FormScreenWrapper = styled.div`
   .form-content {
@@ -78,7 +78,7 @@ const CreateProduct = () => {
     price: "",
     description: "",
     image: null,
-    cat: "", // Changed to string for single category selection
+    cat: "", 
   });
 
   const [error, setError] = useState("");
@@ -111,7 +111,7 @@ const CreateProduct = () => {
     data.append("price", price);
     data.append("desc", description);
     data.append("media", image);
-    data.append("cat", cat); // Single category selection
+    data.append("cat", cat); 
 
     try {
       const response = await axios.post(
@@ -124,16 +124,14 @@ const CreateProduct = () => {
           },
         }
       );
-      //console.log("Product created:", response.data);
-
       setFormData({
         productName: "",
         price: "",
         description: "",
         image: null,
-        cat: "", // Reset category after successful submission
+        cat: "", 
       });
-      alert("your product created successfully");
+      alert("Your product was created successfully!");
     } catch (error) {
       console.error("Error creating product:", error);
       setError("Failed to create product. Please try again.");
@@ -229,7 +227,7 @@ const CreateProduct = () => {
                     <option value="fashion">Fashion</option>
                     <option value="scholastic gear">Scholastic Gear</option>
                     <option value="lab apparel">Lab Apparel</option>
-                    <option value="Miscellaneous Items">Miscellaneous Items</option>
+                    <option value="miscellaneous items">Miscellaneous Items</option>
                   </select>
                 </div>
 
@@ -239,7 +237,7 @@ const CreateProduct = () => {
                   onClick={handleSubmit}
                   disabled={loading}
                 >
-                  Submit
+                  {loading ? "Creating..." : "Submit"}
                 </button>
 
                 {error && <div className="form-error">{error}</div>}
@@ -253,4 +251,3 @@ const CreateProduct = () => {
 };
 
 export default CreateProduct;
-

@@ -93,8 +93,7 @@ const UserMenu = () => {
 
       <NavMenuWrapper>
         <ul className="nav-menu-list grid">
-          <li className="nav-menu-item">
-          </li>
+          <li className="nav-menu-item"></li>
           <li className="nav-menu-item">
             <Link
               to="/wishlist"
@@ -106,7 +105,7 @@ const UserMenu = () => {
               }`}
             >
               <span className="nav-link-icon flex items-center justify-center">
-                <img src="./assets/icons/ac_heart.svg" alt="" />
+                <i className="bi bi-heart"></i>
               </span>
               <span className="text-base font-semibold nav-link-text no-wrap">
                 Wishlist
@@ -117,13 +116,11 @@ const UserMenu = () => {
             <Link
               to="/NewProduct"
               className={`nav-menu-link flex items-center ${
-                location.pathname === "/NewProduct" 
-                  ? "active"
-                  : ""
+                location.pathname === "/NewProduct" ? "active" : ""
               }`}
             >
               <span className="nav-link-icon flex items-center justify-center">
-                <img src="./assets/icons/ac_orders.svg" alt="" />
+                <i className="bi bi-box-seam"></i>
               </span>
               <span className="text-base font-semibold nav-link-text no-wrap">
                 Create Ad
@@ -133,14 +130,13 @@ const UserMenu = () => {
           <li className="nav-menu-item">
             <Link to="/" className={`nav-menu-link flex items-center`}>
               <span className="nav-link-icon flex items-center justify-center">
-                <img src="./assets/icons/ac_sign_out.svg" alt="" />
+                <i className="bi bi-box-arrow-right"></i>
               </span>
               <span className="text-base font-semibold nav-link-text no-wrap">
                 Sign out
               </span>
             </Link>
           </li>
-          
         </ul>
       </NavMenuWrapper>
 

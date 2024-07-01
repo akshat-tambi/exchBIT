@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Container, Section } from '../../styles/styles';
 import Title from '../common/Title';
-import ProductItem from './ProductItem'; // Assuming you have a ProductItem component
-import { getProductsByCategory } from '../../services/productService'; // Updated with getProductByCategory
-import { useParams } from 'react-router-dom'; // Import useParams hook
+import ProductItem from './ProductItem';
+import { getProductsByCategory } from '../../services/productService';
+import { useParams } from 'react-router-dom';
 import { breakpoints } from '../../styles/themes/default';
-import Slider from 'rc-slider'; // Import Slider component from rc-slider library
-import 'rc-slider/assets/index.css'; // Import default styles for rc-slider
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import LoadingScreen from '../../components/loadingScreen/LoadingScreen'; 
 
 const FilterPageWrapper = styled.div`
   display: flex;
@@ -72,27 +73,33 @@ const Divider = styled.div`
 `;
 
 const FilterPage = () => {
-  const { categoryName } = useParams(); // Retrieve categoryName from URL params
+  const { categoryName } = useParams();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [filters, setFilters] = useState({ productName: '', minPrice: '0', maxPrice: '50000' });
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
     fetchProductsByCategory();
-  }, [categoryName]); // Fetch products when categoryName changes
+  }, [categoryName]);
 
   const fetchProductsByCategory = async () => {
     try {
-      
+      setLoading(true); 
       const response = await getProductsByCategory(categoryName);
       if (response.success) {
         setProducts(response.products);
-        setFilteredProducts(response.products); // Initialize filteredProducts with all products
+        setFilteredProducts(response.products);
       } else {
         console.error('Failed to fetch ads by category:', response.message);
+        setError(response.message);
       }
     } catch (error) {
       console.error('Error fetching ads by category!');
+      setError('Error fetching ads by category!');
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -104,7 +111,7 @@ const FilterPage = () => {
     }));
   };
 
-  const handleFormSubmit = async (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
     let filtered = products.filter(product => {
       if (filters.productName && !product.pName.toLowerCase().includes(filters.productName.toLowerCase())) {
@@ -122,10 +129,18 @@ const FilterPage = () => {
     setFilteredProducts(filtered);
   };
 
+  if (loading) {
+    return <LoadingScreen />; 
+  }
+
+  if (error) {
+    return <p>{error}</p>; 
+  }
+
   return (
     <Section>
       <Container>
-        <Title titleText={categoryName.toUpperCase()} /> 
+        <Title titleText={categoryName.toUpperCase()} />
         <FilterPageWrapper>
           <FilterForm onSubmit={handleFormSubmit}>
             <FilterInput
@@ -149,7 +164,7 @@ const FilterPage = () => {
             </div>
             <FilterButton type="submit">Apply Filters</FilterButton>
           </FilterForm>
-          <Divider /> {/* Vertical divider */}
+          <Divider />
           <ProductList>
             {filteredProducts.map(product => (
               <ProductItem key={product._id} product={product} />

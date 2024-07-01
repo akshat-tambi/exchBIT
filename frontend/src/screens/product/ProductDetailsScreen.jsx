@@ -10,14 +10,15 @@ import { breakpoints, defaultTheme } from "../../styles/themes/default";
 import { useParams } from "react-router-dom";
 import { currencyFormat } from "../../utils/helper";
 import axios from 'axios';
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import LoadingScreen from "../../components/loadingScreen/LoadingScreen";
 
 const DetailsContent = styled.div`
   display: grid;
   grid-template-columns: 1fr 1px 1fr;
   gap: 40px;
-  padding-left: 20px; /*
-  
+  padding-left: 20px;
+
   @media (max-width: ${breakpoints.xl}) {
     gap: 24px;
     grid-template-columns: 3fr 1px 2fr;
@@ -39,7 +40,7 @@ const ProductDetailsWrapper = styled.div`
   padding: 24px;
 
   .prod-title {
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
   }
 
   .rating-and-comments {
@@ -144,7 +145,7 @@ const ProductColorWrapper = styled.div`
 `;
 
 const AddToCartButton = styled.button`
-  background-color: rgba(83, 178, 172, 1); 
+  background-color: rgba(83, 178, 172, 1);
   color: white;
   padding: 10px 20px;
   border: none;
@@ -152,14 +153,16 @@ const AddToCartButton = styled.button`
   cursor: pointer;
   display: flex;
   align-items: center;
-  width: 160px;  
-  height:40px;
+  width: 160px;
+  height: 40px;
+
   .bi-cart2 {
-    margin-right: 8px; 
+    margin-right: 8px;
   }
 `;
-const AddToWishList=styled.button`
-   background-color: rgba(83, 178, 172, 1); 
+
+const AddToWishList = styled.button`
+  background-color: rgba(83, 178, 172, 1);
   color: white;
   padding: 10px 20px;
   border: none;
@@ -170,26 +173,26 @@ const AddToWishList=styled.button`
 `;
 
 const DetailsScreenWrapper = styled.div`
-  padding-top: 20px; 
-  padding-right: 20px; 
-  padding-left: 20px; 
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-left: 20px;
 `;
 
 const ProductInfo = styled.div`
   display: flex;
   flex-direction: column;
-  flex-grow: 1; 
+  flex-grow: 1;
 `;
 
 const ProductFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px; 
+  margin-top: 20px;
 `;
 
 const PriceText = styled.span`
-  font-size: 18px; 
+  font-size: 18px;
   font-weight: bold;
 `;
 
@@ -198,7 +201,7 @@ const ProductDetailsScreen = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -217,62 +220,71 @@ const ProductDetailsScreen = () => {
     }
   }, [productId]);
 
-
   const handleAddToCart = async () => {
     try {
-        const response = await axios.post("/api/v1/users/protectedRoute", {}, {
-            withCredentials: true, 
-        });
-
-        const userId = response.data.data;
-
-        if (!userId) {
-            //console.log("Error in authentication");
-            alert("Error in authentication, please log in again.");
-            return;
+      const response = await axios.post(
+        "/api/v1/users/protectedRoute",
+        {},
+        {
+          withCredentials: true,
         }
+      );
 
-        const ws = new WebSocket("wss://exchbit.onrender.com");
+      const userId = response.data.data;
 
-        ws.onopen = () => {
-            ws.send(JSON.stringify({ type: "INITIATE_CHAT", productId, userId }));
-        };
+      if (!userId) {
+        // console.log("Error in authentication");
+        alert("Error in authentication, please log in again.");
+        return;
+      }
 
-        ws.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            if (message.type === "CHAT_INITIATED") {
-                const { chatId } = message;
-                navigate(`/chat/${chatId}`, { replace: true });
-            }
-        };
+      const ws = new WebSocket("wss://exchbit.onrender.com");
 
-        ws.onerror = (error) => {
-            console.error("WebSocket error:", error);
-            alert("An error occurred with the WebSocket connection. Please try again later.");
-        };
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ type: "INITIATE_CHAT", productId, userId }));
+      };
 
-        ws.onclose = () => {
-            //console.log("WebSocket connection closed");
-        };
+      ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === "CHAT_INITIATED") {
+          const { chatId } = message;
+          navigate(`/chat/${chatId}`, { replace: true });
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        alert(
+          "An error occurred with the WebSocket connection. Please try again later."
+        );
+      };
+
+      ws.onclose = () => {
+        // console.log("WebSocket connection closed");
+      };
     } catch (error) {
-        console.error("Error in handleAddToCart:", error);
-        alert("An error occurred. Please try again later.");
+      console.error("Error in handleAddToCart:", error);
+      alert("An error occurred. Please try again later.");
     }
-};
+  };
 
-const ProductWishList=async()=>{
-  try {
-   const MyWishList=await axios.put(`/api/v1/users/SetWish/${product._id}`,{},{
-    withCredentials:true
-   });
-   alert("this product is updated to WishList")
-  } catch (error) {
-    //console.log("Error in adding product to wishlist",error);
-    alert("error in adding the product to the wishlist");
-  }
-}
+  const ProductWishList = async () => {
+    try {
+      const MyWishList = await axios.put(
+        `/api/v1/users/SetWish/${product._id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      alert("this product is updated to WishList");
+    } catch (error) {
+      // console.log("Error in adding product to wishlist",error);
+      alert("error in adding the product to the wishlist");
+    }
+  };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />;
   if (error) return <p>Error</p>;
 
   return (
@@ -280,7 +292,6 @@ const ProductWishList=async()=>{
       <Title className="prod-title" titleText={product.pName} />
       <Breadcrumb items={product.breadcrumbItems} />
       <DetailsContent>
-        
         <ProductPreview previewImages={product.media} />
         <VerticalDivider />
         <ProductInfo>
@@ -292,20 +303,23 @@ const ProductWishList=async()=>{
             </div>
             <div>
               <AddToCartButton className="prod-add-btn" onClick={handleAddToCart}>
-              <center><span className="bi bi-chat-left-text" >    </span>
-              <span className="prod-add-btn-text">Chat with seller</span></center>
-            </AddToCartButton>
-            <br />
-            <AddToCartButton className="prod-add-btn" onClick={ProductWishList}>
-            <center><span className="bi bi-heart" >  </span>
-            <span className="prod-add-btn-text">Add To WishList</span></center>
-            </AddToCartButton>
+                <center>
+                  <span className="bi bi-chat-left-text"> </span>
+                  <span className="prod-add-btn-text">Chat with seller</span>
+                </center>
+              </AddToCartButton>
+              <br />
+              <AddToCartButton className="prod-add-btn" onClick={ProductWishList}>
+                <center>
+                  <span className="bi bi-heart"> </span>
+                  <span className="prod-add-btn-text">Add To WishList</span>
+                </center>
+              </AddToCartButton>
             </div>
           </ProductFooter>
         </ProductInfo>
       </DetailsContent>
       <ProductSimilar productId={productId} />
-      
     </DetailsScreenWrapper>
   );
 };

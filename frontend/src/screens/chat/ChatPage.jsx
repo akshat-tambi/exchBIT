@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import LoadingScreen from '../../components/loadingScreen/LoadingScreen'; 
 
 const ChatPageWrapper = styled.div`
   display: flex;
@@ -23,7 +24,7 @@ const ChatMessages = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Increase vertical spacing between messages */
+  gap: 20px; 
 `;
 
 const ChatMessage = styled.div`
@@ -44,7 +45,7 @@ const ChatMessage = styled.div`
     left: 10px;
     font-size: 12px;
     color: grey;
-    white-space: nowrap; /* Ensure the text does not wrap */
+    white-space: nowrap; 
   }
 `;
 
@@ -83,6 +84,7 @@ const ChatPage = () => {
   const [userId, setUserId] = useState(null);
   const [pName, setPName] = useState('');
   const [senderName, setSenderName] = useState('');
+  const [isLoading, setIsLoading] = useState(true); 
   const ws = useRef(null);
   const navigate = useNavigate();
 
@@ -97,6 +99,7 @@ const ChatPage = () => {
         setUserId(fetchedUserId);
       } catch (error) {
         console.error("Error fetching userId:", error);
+        setIsLoading(false); 
       }
     };
 
@@ -111,8 +114,10 @@ const ChatPage = () => {
         setPName(chatData.productName);
         setSenderName(chatData.name);
         setMessages(chatData.messages);
+        setIsLoading(false); 
       } catch (error) {
         console.error("Error fetching chat history:", error);
+        setIsLoading(false); 
       }
     };
 
@@ -125,7 +130,7 @@ const ChatPage = () => {
         if (chatId && userId) {
           ws.current.send(JSON.stringify({ type: 'JOIN_ROOM', chatId }));
           ws.current.send(JSON.stringify({ type: 'TRIGGER_SAVE' }));
-          fetchChatHistory(); // Fetch chat history only after WebSocket connection is opened
+          fetchChatHistory(); 
         }
       };
 
@@ -166,35 +171,41 @@ const ChatPage = () => {
         ws.current.send(JSON.stringify({ type: 'CHAT_MESSAGE', chatId, from: userId, message: inputMessage }));
         setInputMessage('');
       } else {
+        setIsLoading(false); 
         console.error("User ID is not available.");
       }
     }
   };
 
-
   return (
     <ChatPageWrapper>
-      <h2>Chat with {senderName}, Product: {pName}</h2>
-      <ChatMessages>
-        {messages.map((msg, index) => {
-          const isOwnMessage = msg.from === userId;
-          const showSender = index === 0 || messages[index - 1].from !== msg.from;
-          return (
-            <ChatMessage key={index} isOwnMessage={isOwnMessage} showSender={showSender} senderName={senderName}>
-              <p>{msg.message}</p>
-            </ChatMessage>
-          );
-        })}
-      </ChatMessages>
-      <ChatInput>
-        <ChatInputField
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <ChatSendButton onClick={handleSendMessage}>Send</ChatSendButton>
-      </ChatInput>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <h2>Chat with {senderName}, Product: {pName}</h2>
+          <ChatMessages>
+            {messages.map((msg, index) => {
+              const isOwnMessage = msg.from === userId;
+              const showSender = index === 0 || messages[index - 1].from !== msg.from;
+              return (
+                <ChatMessage key={index} isOwnMessage={isOwnMessage} showSender={showSender} senderName={senderName}>
+                  <p>{msg.message}</p>
+                </ChatMessage>
+              );
+            })}
+          </ChatMessages>
+          <ChatInput>
+            <ChatInputField
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="Type a message..."
+            />
+            <ChatSendButton onClick={handleSendMessage}>Send</ChatSendButton>
+          </ChatInput>
+        </>
+      )}
     </ChatPageWrapper>
   );
 };

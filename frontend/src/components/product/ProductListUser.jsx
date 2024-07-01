@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { breakpoints } from '../../styles/themes/default';
 import ProductItemUser from './ProductItemUser';
+import LoadingScreen from '../../components/loadingScreen/LoadingScreen';
 
 const ProductListWrapper = styled.div`
   display: grid;
@@ -11,8 +12,6 @@ const ProductListWrapper = styled.div`
   margin-top: 20px;
   padding: 20px;
   border-radius: 8px;
-  
-  
   
   @media (max-width: ${breakpoints.sm}) {
     gap: 12px;
@@ -47,6 +46,7 @@ const NoAdsMessage = styled.p`
 const ProductListUser = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -58,11 +58,17 @@ const ProductListUser = () => {
       } catch (error) {
         console.error('Error fetching ads!', error.message);
         setError('Failed to fetch ads! Please try again later!');
+      } finally {
+        setLoading(false); 
       }
     };
 
     fetchProducts();
   }, []);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <>

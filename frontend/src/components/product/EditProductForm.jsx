@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import LoadingScreen from '../../components/loadingScreen/LoadingScreen'; 
 
 const FormWrapper = styled.div`
   display: flex;
@@ -92,10 +93,9 @@ const MediaLink = styled.a`
   margin-right: 10px;
 `;
 
-
 const EditProductForm = () => {
   const { editid } = useParams();
-
+  const [loading, setLoading] = useState(true); //
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -107,20 +107,22 @@ const EditProductForm = () => {
   useEffect(() => {
     const fetchProductById = async () => {
       try {
+        setLoading(true); 
         const productResponse = await axios.get(`/api/v1/products/${editid}`);
         const product = productResponse.data.product;
 
         setProductName(product.pName);
         setDescription(product.desc);
         setPrice(product.price);
-        setCategory(product.cat[0]); 
-
+        setCategory(product.cat[0]);
         setUploadedMedia(product.media.map((url, index) => ({
           url,
-          id: index 
+          id: index
         })));
       } catch (error) {
         console.error('Error fetching product details!', error);
+      } finally {
+        setLoading(false); 
       }
     };
 
@@ -169,76 +171,80 @@ const EditProductForm = () => {
 
   return (
     <FormWrapper>
-      <FormContainer onSubmit={handleSubmit}>
-        <Title>Edit Product</Title>
+      {loading ? (
+        <LoadingScreen /> 
+      ) : (
+        <FormContainer onSubmit={handleSubmit}>
+          <Title>Edit Product</Title>
 
-        <Label htmlFor="productName">Product Name:</Label>
-        <Input
-          type="text"
-          id="productName"
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
-          required
-        />
+          <Label htmlFor="productName">Product Name:</Label>
+          <Input
+            type="text"
+            id="productName"
+            value={productName}
+            onChange={(e) => setProductName(e.target.value)}
+            required
+          />
 
-        <Label htmlFor="description">Description:</Label>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
+          <Label htmlFor="description">Description:</Label>
+          <Textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
 
-        <Label htmlFor="price">Price (₹):</Label>
-        <Input
-          type="number"
-          id="price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          required
-        />
+          <Label htmlFor="price">Price (₹):</Label>
+          <Input
+            type="number"
+            id="price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+          />
 
-        {uploadedMedia.length > 0 && (
-          <MediaContainer>
-            <Label>Uploaded Media:</Label>
-            {uploadedMedia.map(media => (
-              <MediaItem key={media.id}>
-                <MediaLink href={media.url} target="_blank" rel="noopener noreferrer">
-                  {`file ${media.id+1}`}
-                </MediaLink>
-                <span>
-                <Button type="button" onClick={() => handleMediaDelete(media.id)}>
-                  Delete
-                </Button>
-                </span>
-              </MediaItem>
-            ))}
-          </MediaContainer>
-        )}
+          {uploadedMedia.length > 0 && (
+            <MediaContainer>
+              <Label>Uploaded Media:</Label>
+              {uploadedMedia.map(media => (
+                <MediaItem key={media.id}>
+                  <MediaLink href={media.url} target="_blank" rel="noopener noreferrer">
+                    {`file ${media.id + 1}`}
+                  </MediaLink>
+                  <span>
+                    <Button type="button" onClick={() => handleMediaDelete(media.id)}>
+                      Delete
+                    </Button>
+                  </span>
+                </MediaItem>
+              ))}
+            </MediaContainer>
+          )}
 
-        <Label htmlFor="image">New Image:</Label>
-        <Input
-          type="file"
-          id="image"
-          onChange={(e) => setImage(e.target.files[0])}
-        />
+          <Label htmlFor="image">New Image:</Label>
+          <Input
+            type="file"
+            id="image"
+            onChange={(e) => setImage(e.target.files[0])}
+          />
 
-        <Label htmlFor="category">Category:</Label>
-        <Select
-          id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        >
-          <option value="electronics">Electronics</option>
-          <option value="fashion">Fashion</option>
-          <option value="scholastic-gear">Scholastic Gear</option>
-          <option value="lab-apparel">Lab Apparel</option>
-          <option value="general-essentials">Miscellaneous Items</option>
-        </Select>
+          <Label htmlFor="category">Category:</Label>
+          <Select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          >
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+            <option value="scholastic-gear">Scholastic Gear</option>
+            <option value="lab-apparel">Lab Apparel</option>
+            <option value="general-essentials">Miscellaneous Items</option>
+          </Select>
 
-        <Button type="submit">Submit</Button>
-      </FormContainer>
+          <Button type="submit">Submit</Button>
+        </FormContainer>
+      )}
     </FormWrapper>
   );
 };

@@ -15,7 +15,7 @@ const ProductListWrapper = styled.div`
   }
 `;
 
-const ProductList = () => {
+const ProductList = ({ setLoading }) => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
@@ -23,18 +23,19 @@ const ProductList = () => {
     const fetchProducts = async () => {
       try {
         const productsData = await getAllProducts();
-        setProducts(productsData.data);
         setProducts(productsData);
+        setLoading(false); 
       } catch (error) {
         console.error('Error fetching ads:', error.message);
-        setError('Failed to fetch ads. Please try again later!'); // Set error state
+        setError('Failed to fetch ads. Please try again later!'); 
+        setLoading(false); 
       }
     };
-    fetchProducts(); 
-  }, []);
+    fetchProducts();
+  }, [setLoading]);
 
   if (error) {
-    return <p>{error}</p>; 
+    return <p>{error}</p>;
   }
 
   return (
