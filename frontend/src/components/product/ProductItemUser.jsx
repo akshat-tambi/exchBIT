@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -77,8 +77,9 @@ const SoldTag = styled.span`
 `;
 
 const ProductItemUser = ({ product }) => {
+  const [isSold, setIsSold] = useState(product.status);
+
   const firstMedia = product.media.length > 0 ? product.media[0] : "";
-  const isSold = product.status === true;
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
@@ -93,19 +94,24 @@ const ProductItemUser = ({ product }) => {
       }
     }
   };
-  const ProductWishList=async()=>{
-     try {
-      const MyWishList=await axios.put(`/api/v1/users/SetWish/${product._id}`,{},{
-        withCredentials:true
-      });
-      alert("this product is updated to WishList")
-     } catch (error) {
-       //console.log("Error in adding product to wishlist!");
-       alert("Unable to add this product to wishlist!");
-     }
-  }
+
+  const ProductWishList = async () => {
+    try {
+      const MyWishList = await axios.put(
+        `/api/v1/users/SetWish/${product._id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      alert("this product is updated to WishList");
+    } catch (error) {
+      alert("Unable to add this product to wishlist!");
+    }
+  };
+
   const handleMarkAsSold = async () => {
-    if(isSold){
+    if (isSold) {
       alert("Product has been sold!");
       return;
     }
@@ -119,6 +125,7 @@ const ProductItemUser = ({ product }) => {
           withCredentials: true,
         }
       );
+      setIsSold(true); 
       alert("Marked as sold!");
     } catch (error) {
       console.error("Error marking product as sold!");
@@ -145,10 +152,7 @@ const ProductItemUser = ({ product }) => {
         </div>
         <div className="flex justify-end">
           <Link to={`/EditUserProduct/${product._id}`}>
-            <ActionButton
-              color="#007bff"
-              hoverColor="#0056b3"
-            >
+            <ActionButton color="#007bff" hoverColor="#0056b3">
               Edit
             </ActionButton>
           </Link>
