@@ -23,6 +23,7 @@ const ProductImage = styled.img`
   height: auto;
   display: block;
   object-fit: cover;
+  max-height: 200px; 
 `;
 
 const WishlistButton = styled.button`

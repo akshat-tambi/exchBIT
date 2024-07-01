@@ -1,4 +1,3 @@
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -23,6 +22,7 @@ const ProductImage = styled.img`
   height: auto;
   display: block;
   object-fit: cover;
+  max-height: 200px; 
 `;
 
 const WishlistButton = styled.button`
@@ -36,7 +36,7 @@ const WishlistButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Add shadow for button
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 
   &:hover {
     background-color: ${defaultTheme.color_yellow};
