@@ -2,14 +2,13 @@ import { WebSocketServer } from 'ws';
 import { kv } from '@vercel/kv';
 import WebSocket from 'ws';
 
-
 import { Chat } from './models/chat.model.js';
 import { User } from './models/user.model.js';
 import { Product } from './models/products.model.js';
 
 const rooms = new Map();
 
-const SYNC_INTERVAL_MS = 5 *1000*60;
+const SYNC_INTERVAL_MS = 5 * 1000 * 60;
 
 await kv.set("user_1_session", `${process.env.KV_REST_API_TOKEN}`);
 const session = await kv.get("user_1_session");
@@ -85,8 +84,13 @@ wss.on('connection', async (ws) => {
                     const { productId, userId } = parsedMessage;
                     const prod = await Product.findById(productId);
                     const ownerId = prod.user;
-                    const roomKey = `${productId}:${ownerId}:${userId}`;
+                    
+                    if (userId === ownerId) {
+                        ws.send(JSON.stringify({ type: 'ERROR', message: 'User cannot initiate a chat with themselves.' }));
+                        return;
+                    }
 
+                    const roomKey = `${productId}:${ownerId}:${userId}`;
                     let chat = await Chat.findOne({ product: productId, owner: ownerId, user: userId });
 
                     if (chat || rooms.has(roomKey)) {
@@ -224,6 +228,7 @@ wss.on('close', async () => {
 });
 
 export { wss, kv };
+
 
 
 
