@@ -85,7 +85,7 @@ const LoginUser=asyncHandler(async(req,res)=>{
    
 
    //verify the password from userschema method
-   const check=exist.isPasswordTrue(password);
+   const check=await exist.isPasswordTrue(password);
    if(!check){
      throw new ApiError(409,"Incorrect password!");
    }
