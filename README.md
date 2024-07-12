@@ -1,10 +1,11 @@
 
 # Marketplace for BITians
+### Link to Website: https://exchangebit.vercel.app/
+
 ## IMPORTANT NOTICE:  
 Since the site is deployed on a free tier, it can happen that it takes ~50 seconds on first visit to spin up the backend services. We are actively working to get a better host for our website.
 
-## Link to Website
-https://exchangebit.vercel.app/
+
 
 ## Overview
 - **Comprehensive Marketplace:** Developed a virtual marketplace tailored for hostel students to buy and sell used goods.

@@ -1,20 +1,26 @@
 import { staticImages } from "../utils/images";
 
 const navMenuData = [
+  // {
+  //   id: "nav-menu-1",
+  //   menuLink: "/sign_in",
+  //   menuText: "Sign In",
+  // },
+
   {
-    id: "nav-menu-1",
+    id: "nav-menu-2",
     menuLink: "/userProduct",
     menuText: "Your Ads",
   },
   {
-    id: "nav-menu-2",
-    menuLink: "/sign_in",
-    menuText: "Sign In",
+    id: "nav-menu-3",
+    menuLink: "/chats",
+    menuText: "Chats",
   },
   {
     id: "nav-menu-4",
-    menuLink: "/chats",
-    menuText: "Chats",
+    menuLink: "/sign_out",
+    menuText: "Sign out",
   },
 ];
 

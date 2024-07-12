@@ -10,6 +10,8 @@ import { BaseButtonBlack } from '../../styles/button';
 import { breakpoints, defaultTheme } from '../../styles/themes/default';
 import axios from 'axios';
 import LoadingScreen from '../../components/loadingScreen/LoadingScreen';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggle } from "../../redux/slices/loginStatusSlice"; 
 
 const SignInScreenWrapper = styled.section`
   .form-separator {
@@ -43,6 +45,8 @@ const SignInScreenWrapper = styled.section`
 
 const SignInScreen = () => {
   const navigate = useNavigate();
+  const dispatch=useDispatch();
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -76,6 +80,7 @@ const SignInScreen = () => {
       });
 
       alert(response.data.message);
+      dispatch(toggle());
       navigate('/');
     } catch (error) {
       alert(error.response.data.message);

@@ -5,9 +5,11 @@ import { staticImages } from "../../utils/images";
 import { navMenuData } from "../../data/data";
 import { Link, useLocation } from "react-router-dom";
 import { breakpoints, defaultTheme } from "../../styles/themes/default";
-import { useDispatch } from "react-redux";
+import { useDispatch , useSelector} from "react-redux";
 import { toggleSidebar } from "../../redux/slices/sidebarSlice";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toggle } from "../../redux/slices/loginStatusSlice";
+import axios from 'axios'
 
 const NavigationAndSearchWrapper = styled.div`
   column-gap: 20px;
@@ -130,9 +132,54 @@ const Header = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isLoggedIn = useSelector((state) => state.loginStatus.isLoggedIn);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await axios.post("/api/v1/users/protectedRoute", {}, {
+          withCredentials: true,
+        });
+        const fetchedUserId = response.data.data;
+        if (fetchedUserId) {
+          dispatch(toggle());
+        }
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+      }
+    };
+
+    fetchUserId(); 
+  }, [dispatch]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const navMenu = () => {
+    if (!isLoggedIn) {
+      return (
+        <li className="nav-menu-item" key={"nav-menu-1"}>
+          <Link
+            to={"/sign_in"}
+            className={`nav-menu-link text-base font-medium text-gray ${location.pathname === "/sign_in" ? "active" : ""}`}
+          >
+            {"Sign In"}
+          </Link>
+        </li>
+      );
+    } else {
+      return navMenuData.map((menu) => (
+        <li className="nav-menu-item" key={menu.id}>
+          <Link
+            to={menu.menuLink}
+            className={`nav-menu-link text-base font-medium text-gray ${location.pathname === menu.menuLink ? "active" : ""}`}
+          >
+            {menu.menuText}
+          </Link>
+        </li>
+      ));
+    }
   };
 
   return (
@@ -161,18 +208,7 @@ const Header = () => {
           <NavigationAndSearchWrapper className="flex items-center">
             <NavigationMenuWrapper isMenuOpen={isMenuOpen}>
               <ul className="nav-menu-list flex items-center">
-                {navMenuData?.map((menu) => (
-                  <li className="nav-menu-item" key={menu.id}>
-                    <Link
-                      to={menu.menuLink}
-                      className={`nav-menu-link text-base font-medium text-gray ${
-                        location.pathname === menu.menuLink ? "active" : ""
-                      }`}
-                    >
-                      {menu.menuText}
-                    </Link>
-                  </li>
-                ))}
+                {navMenu()}
               </ul>
             </NavigationMenuWrapper>
             <button
