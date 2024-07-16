@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggle } from "../../redux/slices/loginStatusSlice"; 
 
 const SignInScreenWrapper = styled.section`
-  .form-separator {
+  .form-separator { 
     margin: 32px 0;
     column-gap: 18px;
 
